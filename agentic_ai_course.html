@@ -1,0 +1,1698 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agentic AI Workshop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f7f4; --surface:#ffffff; --surface-2:#f0efea; --border:#e2e0d8;
+  --text:#1d1d1b; --muted:#5f5e58; --faint:#8b8a83;
+  --accent:#c4552d; --accent-soft:#f8e6dd;
+  --llm:#6a4fc8; --llm-soft:#ece7fb;
+  --code:#1f7a5a; --code-soft:#dff1e8;
+  --human:#b5730d; --human-soft:#fbefd8;
+  --fail:#b3261e; --fail-soft:#fbe3e1;
+  --pass:#1f7a3a; --pass-soft:#e0f2e5;
+  --warn:#9a6400; --warn-soft:#fdf0d4;
+  --pre-bg:#1e1e24; --pre-text:#e8e6e3;
+  --tk-kw:#ff8f6b; --tk-str:#a5d6a7; --tk-com:#9a9aa8; --tk-num:#f6c177; --tk-fn:#9ccfd8;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#17171a; --surface:#202024; --surface-2:#2a2a2f; --border:#36363c;
+    --text:#ecebe8; --muted:#aeada7; --faint:#86857f;
+    --accent:#ee8a62; --accent-soft:#3a271f;
+    --llm:#a993f2; --llm-soft:#2c2640;
+    --code:#5ccb9c; --code-soft:#1c3329;
+    --human:#e8ad4c; --human-soft:#3a2e18;
+    --fail:#f2847b; --fail-soft:#3d2120;
+    --pass:#6fd18a; --pass-soft:#1d3323;
+    --warn:#efbd5c; --warn-soft:#3a2f17;
+    --pre-bg:#121215; --pre-text:#e8e6e3;
+    --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#17171a; --surface:#202024; --surface-2:#2a2a2f; --border:#36363c;
+  --text:#ecebe8; --muted:#aeada7; --faint:#86857f;
+  --accent:#ee8a62; --accent-soft:#3a271f;
+  --llm:#a993f2; --llm-soft:#2c2640;
+  --code:#5ccb9c; --code-soft:#1c3329;
+  --human:#e8ad4c; --human-soft:#3a2e18;
+  --fail:#f2847b; --fail-soft:#3d2120;
+  --pass:#6fd18a; --pass-soft:#1d3323;
+  --warn:#efbd5c; --warn-soft:#3a2f17;
+  --pre-bg:#121215; --pre-text:#e8e6e3;
+  --shadow:none;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16.5px/1.7 Inter,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+code,pre,kbd{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace}
+:not(pre)>code{background:var(--surface-2);border:1px solid var(--border);border-radius:5px;padding:.05em .35em;font-size:.86em}
+
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:100vh}
+nav.side{position:sticky;top:0;height:100vh;overflow:auto;border-right:1px solid var(--border);background:var(--surface);padding:22px 18px 40px}
+.brand{font-weight:800;font-size:15px;letter-spacing:-.01em;margin-bottom:4px}
+.brand-sub{font-size:12.5px;color:var(--muted);margin-bottom:18px}
+.progress{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin:6px 0 4px}
+.progress>i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.progress-label{font-size:12px;color:var(--muted);margin-bottom:16px}
+nav.side h4{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);margin:18px 0 6px}
+nav.side a{display:flex;gap:8px;align-items:center;color:var(--text);text-decoration:none;font-size:13.5px;padding:5px 8px;border-radius:7px}
+nav.side a:hover{background:var(--surface-2)}
+nav.side a.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav.side a .dot{width:7px;height:7px;border-radius:50%;border:1.5px solid var(--faint);flex:none}
+nav.side a.done .dot{background:var(--pass);border-color:var(--pass)}
+.theme-btn{margin-top:22px;width:100%;padding:8px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:8px;font:inherit;font-size:13px;cursor:pointer}
+main{padding:0 48px 120px;max-width:980px;min-width:0}
+.pattern .row>*{min-width:0}
+.topbar{display:none}
+
+.hero{padding:56px 0 30px;border-bottom:1px solid var(--border);margin-bottom:10px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.hero h1{font-size:44px;line-height:1.08;letter-spacing:-.03em;margin:10px 0 14px;font-weight:800}
+.hero p.lead{font-size:18.5px;color:var(--muted);max-width:720px;margin:0}
+.meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.chip{font-size:12.5px;padding:5px 11px;border-radius:99px;background:var(--surface);border:1px solid var(--border);color:var(--muted)}
+
+section.unit{padding-top:46px;scroll-margin-top:10px}
+.unit-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.unit-num{font:600 13px "JetBrains Mono",monospace;color:var(--accent);background:var(--accent-soft);padding:3px 9px;border-radius:6px}
+h2{font-size:30px;letter-spacing:-.02em;margin:0;line-height:1.2}
+h3{font-size:20px;letter-spacing:-.01em;margin:34px 0 8px}
+h4{font-size:16px;margin:22px 0 6px}
+.part-banner{margin-top:70px;padding:26px 28px;border-radius:16px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow)}
+.part-banner .eyebrow{display:block;margin-bottom:6px}
+.part-banner h2{font-size:28px}
+.part-banner p{color:var(--muted);margin:8px 0 0}
+.goal{margin:14px 0 4px;padding:12px 16px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 10px 10px 0;font-size:15px}
+.goal b{color:var(--accent)}
+.done-row{margin-top:26px;display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted)}
+.done-row input{width:18px;height:18px;accent-color:var(--pass)}
+
+.grid{display:grid;gap:14px;margin:16px 0}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 6px}
+.card p{margin:0;color:var(--muted);font-size:14.5px}
+.card p + p{margin-top:8px}
+.card .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:5px;margin-bottom:8px}
+.t-llm{background:var(--llm-soft);color:var(--llm)}
+.t-code{background:var(--code-soft);color:var(--code)}
+.t-human{background:var(--human-soft);color:var(--human)}
+.t-acc{background:var(--accent-soft);color:var(--accent)}
+.callout{margin:18px 0;padding:14px 18px;border-radius:12px;background:var(--surface);border:1px solid var(--border);font-size:15px}
+.callout.key{border-color:var(--accent);background:var(--accent-soft)}
+.callout.try{border-color:var(--code);background:var(--code-soft)}
+.callout.warn{border-color:var(--warn);background:var(--warn-soft)}
+.callout strong:first-child{display:block;margin-bottom:2px}
+.formula{font:600 17px "JetBrains Mono",monospace;text-align:center;padding:18px;border-radius:12px;background:var(--surface);border:1px dashed var(--accent);margin:18px 0;color:var(--text)}
+.formula span{color:var(--accent)}
+
+/* pattern cards */
+.pattern{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin:14px 0;box-shadow:var(--shadow)}
+.pattern h4{margin:0 0 4px;font-size:18px}
+.pattern .row{display:grid;grid-template-columns:130px 1fr;gap:10px;padding:6px 0;border-top:1px dashed var(--border);font-size:15px}
+.pattern .row:first-of-type{border-top:none}
+.pattern .row>b{color:var(--muted);font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;padding-top:2px}
+.pattern pre{margin:6px 0 0;padding:10px 12px;background:var(--surface-2);border-radius:8px;font-size:12.5px;white-space:pre-wrap}
+
+/* "what happened" explain list */
+.explain{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 18px;margin:0 0 18px}
+.explain h5{margin:0 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--code)}
+.explain ol,.explain ul{margin:4px 0;padding-left:20px}
+.explain li{margin:3px 0;font-size:15px}
+
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px;background:var(--surface);border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+th{background:var(--surface-2);font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+tr:last-child td{border-bottom:none}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+.codebox{margin:14px 0 18px;border-radius:12px;overflow:hidden;background:var(--pre-bg);border:1px solid var(--border)}
+.codebox .bar{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;background:rgba(255,255,255,.05);font:12px "JetBrains Mono",monospace;color:#a9a8b3}
+.codebox .bar button{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#e8e6e3;border-radius:6px;font:11.5px Inter,sans-serif;padding:3px 10px;cursor:pointer}
+.codebox pre{margin:0;padding:14px 16px;overflow-x:auto;color:var(--pre-text);font-size:13px;line-height:1.6;tab-size:4}
+.tk-k{color:var(--tk-kw)} .tk-s{color:var(--tk-str)} .tk-c{color:var(--tk-com);font-style:italic} .tk-n{color:var(--tk-num)} .tk-f{color:var(--tk-fn)}
+.out{margin:-8px 0 18px;padding:10px 14px;border-radius:0 0 10px 10px;background:var(--surface-2);border:1px solid var(--border);font:12.5px/1.55 "JetBrains Mono",monospace;color:var(--muted);white-space:pre-wrap}
+.out::before{content:"You should see something like";display:block;font:700 10.5px Inter,sans-serif;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);margin-bottom:4px}
+
+.stepper{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin:18px 0;box-shadow:var(--shadow)}
+.loop-ring{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.loop-ring button{flex:1 1 110px;padding:10px 8px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface-2);color:var(--muted);font:600 13px Inter,sans-serif;cursor:pointer;transition:all .2s}
+.loop-ring button.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.loop-ring button small{display:block;font-weight:500;font-size:11px;opacity:.8}
+.step-panel{min-height:150px;padding:14px 16px;border-radius:10px;background:var(--bg);border:1px solid var(--border)}
+.step-panel .who{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em}
+.step-panel h4{margin:4px 0 6px;font-size:17px}
+.step-panel p{margin:0 0 8px;color:var(--muted);font-size:14.5px}
+.step-panel pre{margin:0;white-space:pre-wrap;font-size:12.5px;background:var(--surface-2);padding:10px 12px;border-radius:8px;color:var(--text)}
+.step-nav{display:flex;justify-content:space-between;margin-top:12px}
+.btn{padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font:600 13.5px Inter,sans-serif;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+
+.ladder{display:grid;gap:8px;margin:16px 0}
+.rung{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+.rung b.lv{font:700 14px "JetBrains Mono",monospace;color:var(--accent);text-align:center}
+.rung p{margin:0;font-size:14.5px;color:var(--muted)}
+.rung p strong{color:var(--text)}
+.rung.here{border-color:var(--accent);background:var(--accent-soft)}
+
+.diagram{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin:18px 0;overflow-x:auto}
+.diagram svg{display:block;width:100%;min-width:640px;height:auto}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:10px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
+
+.play{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin:18px 0;box-shadow:var(--shadow)}
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.tabs button{padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface-2);color:var(--muted);font:600 13px Inter,sans-serif;cursor:pointer}
+.tabs button.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:14px}
+.form label{font-size:12.5px;color:var(--muted);font-weight:600;display:grid;gap:4px}
+.form select,.form input{padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font:14px Inter,sans-serif;width:100%}
+.measures{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px}
+.measure{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:9px 12px}
+.measure small{display:block;font-size:11.5px;color:var(--faint)}
+.measure b{font:600 17px "JetBrains Mono",monospace}
+.rules-list{display:grid;gap:6px;margin-bottom:12px}
+.rule-row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:7px 12px;border-radius:8px;background:var(--bg);border:1px solid var(--border);font-size:13.5px}
+.pill{font:700 11px Inter,sans-serif;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.pill.ok{background:var(--pass-soft);color:var(--pass)}
+.pill.bad{background:var(--fail-soft);color:var(--fail)}
+.pill.mgr{background:var(--warn-soft);color:var(--warn)}
+.verdict{padding:12px 16px;border-radius:10px;font-weight:700;font-size:15px}
+.verdict.PASS{background:var(--pass-soft);color:var(--pass)}
+.verdict.FAIL{background:var(--fail-soft);color:var(--fail)}
+.verdict.MGR{background:var(--warn-soft);color:var(--warn)}
+.verdict span{display:block;font-weight:500;font-size:13.5px;margin-top:2px}
+
+.q{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin:12px 0}
+.q p.qt{margin:0 0 10px;font-weight:600}
+.q .opts{display:grid;gap:6px}
+.q .opts button{text-align:left;padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font:14px Inter,sans-serif;cursor:pointer}
+.q .opts button.right{border-color:var(--pass);background:var(--pass-soft)}
+.q .opts button.wrong{border-color:var(--fail);background:var(--fail-soft)}
+.q .why{display:none;margin-top:10px;font-size:14px;color:var(--muted)}
+.q.answered .why{display:block}
+
+details{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 16px;margin:10px 0}
+details summary{cursor:pointer;font-weight:600}
+details[open] summary{margin-bottom:8px}
+ol.steps li,ul.tight li{margin:4px 0}
+.agenda{display:grid;gap:10px;margin:18px 0}
+.agenda-item{display:grid;grid-template-columns:110px 1fr;gap:16px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.agenda-item .time{font:600 13px "JetBrains Mono",monospace;color:var(--accent)}
+.agenda-item h4{margin:0 0 3px}
+.agenda-item p{margin:0;color:var(--muted);font-size:14px}
+.file-tree{font:13px/1.8 "JetBrains Mono",monospace;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;white-space:pre;overflow-x:auto}
+.file-tree em{color:var(--faint);font-style:normal}
+footer{margin-top:80px;padding-top:24px;border-top:1px solid var(--border);color:var(--faint);font-size:13px}
+
+@media (max-width:900px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  nav.side{position:fixed;inset:0 25% 0 0;z-index:30;transform:translateX(-102%);transition:transform .25s;height:100vh;box-shadow:0 0 40px rgba(0,0,0,.25)}
+  nav.side.open{transform:none}
+  .topbar{display:flex;position:sticky;top:0;z-index:20;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
+  .topbar button{border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:8px;padding:6px 12px;font:600 13px Inter,sans-serif}
+  main{padding:0 16px 80px}
+  .hero h1{font-size:32px}
+  h2{font-size:24px}
+  .g2,.g3{grid-template-columns:1fr}
+  .agenda-item{grid-template-columns:1fr;gap:4px}
+  .pattern .row{grid-template-columns:1fr;gap:2px}
+}
+@media print{nav.side,.topbar,.theme-btn,.codebox .bar button{display:none}.layout{display:block}main{max-width:none}}
+</style>
+</head>
+<body>
+<div class="topbar"><b>Agentic AI Workshop</b><button id="menuBtn" aria-label="Open contents">Contents</button></div>
+<div class="layout">
+<nav class="side" id="side">
+  <div class="brand">Agentic AI Workshop</div>
+  <div class="brand-sub">Ideas → Mini labs → A real project</div>
+  <div class="progress"><i id="progBar"></i></div>
+  <div class="progress-label" id="progLabel">0 of 0 units done</div>
+
+  <h4>Start</h4>
+  <a href="#welcome"><span class="dot"></span>Our plan for today</a>
+
+  <h4>Part A · The ideas</h4>
+  <a href="#a1"><span class="dot"></span>A1 · Why do we need agents?</a>
+  <a href="#a2"><span class="dot"></span>A2 · What is an agent?</a>
+  <a href="#a3"><span class="dot"></span>A3 · The agent loop</a>
+  <a href="#a4"><span class="dot"></span>A4 · Plan, Act, Decide</a>
+  <a href="#a5"><span class="dot"></span>A5 · Tools, memory, knowledge</a>
+  <a href="#a6"><span class="dot"></span>A6 · Agent patterns</a>
+  <a href="#a7"><span class="dot"></span>A7 · Keeping agents safe</a>
+
+  <h4>Part B · Mini labs (Colab)</h4>
+  <a href="#b0"><span class="dot"></span>Setup · Open Colab</a>
+  <a href="#b1"><span class="dot"></span>Lab 1 · Talk to a model</a>
+  <a href="#b2"><span class="dot"></span>Lab 2 · Get answers as data</a>
+  <a href="#b3"><span class="dot"></span>Lab 3 · Give it a tool</a>
+  <a href="#b4"><span class="dot"></span>Lab 4 · The loop</a>
+  <a href="#b5"><span class="dot"></span>Lab 5 · Search documents</a>
+  <a href="#b6"><span class="dot"></span>Lab 6 · A small graph</a>
+  <a href="#b7"><span class="dot"></span>Lab 7 · Mini decision agent</a>
+
+  <h4>Part C · Project: simple_kdi</h4>
+  <a href="#c1"><span class="dot"></span>C1 · The story</a>
+  <a href="#c2"><span class="dot"></span>C2 · The 4 files</a>
+  <a href="#c3"><span class="dot"></span>C3 · Inside company.py</a>
+  <a href="#c4"><span class="dot"></span>C4 · Inside connect.py</a>
+  <a href="#c5"><span class="dot"></span>C5 · Inside agents.py</a>
+  <a href="#c6"><span class="dot"></span>C6 · Inside main.py</a>
+  <a href="#c7"><span class="dot"></span>C7 · One question, start to end</a>
+  <a href="#c8"><span class="dot"></span>C8 · Rules playground</a>
+  <a href="#c9"><span class="dot"></span>C9 · The demo questions</a>
+  <a href="#c10"><span class="dot"></span>C10 · The learning agent</a>
+  <a href="#c11"><span class="dot"></span>C11 · Run it yourself</a>
+  <a href="#c12"><span class="dot"></span>C12 · Your turn</a>
+
+  <h4>Wrap-up</h4>
+  <a href="#d1"><span class="dot"></span>Quiz</a>
+  <a href="#d2"><span class="dot"></span>Words to remember</a>
+
+  <button class="theme-btn" id="themeBtn">Switch light / dark</button>
+</nav>
+
+<main>
+<!-- ============================================================ HERO -->
+<header class="hero" id="welcome">
+  <span class="eyebrow">Hands-on workshop</span>
+  <h1>Agentic AI, made simple</h1>
+  <p class="lead">Learn what an AI agent is and how it plans, acts and decides. First we learn the ideas with everyday examples. Then we try each idea in a few lines of code in Google Colab. At the end we open a real project, <b>simple_kdi</b>, and see every idea working together.</p>
+  <div class="meta-row">
+    <span class="chip">Python basics are enough</span>
+    <span class="chip">Free Google Colab</span>
+    <span class="chip">Free model from Hugging Face</span>
+  </div>
+</header>
+
+<section class="unit" style="padding-top:30px">
+  <h3 style="margin-top:0">Our plan for today</h3>
+  <div class="agenda">
+    <div class="agenda-item"><div class="time">Part A</div><div><h4>The ideas</h4><p>What an agent is, how it thinks in a loop, and how we keep it safe. Everyday examples, no code.</p></div></div>
+    <div class="agenda-item"><div class="time">Part B</div><div><h4>Mini labs</h4><p>Seven tiny labs in Google Colab. Each lab adds one small idea. Every line of code has a comment.</p></div></div>
+    <div class="agenda-item"><div class="time">Part C</div><div><h4>The project: simple_kdi</h4><p>A real decision assistant for a small company, in 4 Python files. We read it file by file and run it.</p></div></div>
+    <div class="agenda-item"><div class="time">End</div><div><h4>Wrap-up</h4><p>A short quiz and a list of words to remember.</p></div></div>
+  </div>
+  <div class="callout key"><strong>Remember this one sentence</strong>An agent is an AI that works in a <em>loop</em>: it thinks about what to do, does it with a tool, looks at the result, and repeats until the job is done.</div>
+</section>
+
+<!-- ============================================================ PART A -->
+<div class="part-banner"><span class="eyebrow">Part A</span><h2>The ideas</h2><p>No code here. Just simple ideas and examples from daily life.</p></div>
+
+<section class="unit" id="a1" data-unit>
+  <div class="unit-head"><span class="unit-num">A1</span><h2>Why do we need agents?</h2></div>
+  <div class="goal"><b>You will learn:</b> what a normal AI chatbot cannot do.</div>
+  <p>A language model (like ChatGPT or Gemini) is very good with words. But think of it like <b>a very clever friend locked in a room with no phone and no computer</b>. You can ask questions through the door, and they answer. That's all.</p>
+  <div class="grid g2">
+    <div class="card"><span class="tag t-acc">Problem 1</span><h4>It cannot see your data</h4><p>Ask "How many jars do we have?" It does not know. It has never seen your stock sheet.</p></div>
+    <div class="card"><span class="tag t-acc">Problem 2</span><h4>It cannot do things</h4><p>It can <em>say</em> "Order 600 jars", but it cannot actually place the order.</p></div>
+    <div class="card"><span class="tag t-acc">Problem 3</span><h4>It answers in one go</h4><p>Real work needs many steps: check stock, then check suppliers, then compare prices. One answer is not enough.</p></div>
+    <div class="card"><span class="tag t-acc">Problem 4</span><h4>It can be wrong and sound sure</h4><p>It may make up a number or a rule. Nobody checks its work.</p></div>
+  </div>
+  <p>An <b>agent</b> fixes this. We give our clever friend <b>a phone</b> (tools to look things up and do things), <b>a notebook</b> (memory), <b>time to work step by step</b> (a loop), and <b>a manager who checks the work</b> (rules and approval).</p>
+
+  <h3>Chatbot, workflow, agent: what is the difference?</h3>
+  <div class="table-wrap"><table>
+    <tr><th></th><th>Chatbot</th><th>Workflow</th><th>Agent</th></tr>
+    <tr><td><b>In simple words</b></td><td>Answers a question</td><td>Follows fixed steps that a programmer wrote</td><td>Decides its own next step</td></tr>
+    <tr><td><b>Uses tools?</b></td><td>No</td><td>Yes, always the same ones in the same order</td><td>Yes, it chooses which one</td></tr>
+    <tr><td><b>Daily-life example</b></td><td>Asking a friend "What is GST?"</td><td>A washing machine: same cycle every time</td><td>A good employee: "Supplier is late? Let me check stock, call other suppliers, then tell you."</td></tr>
+  </table></div>
+  <div class="callout try"><strong>Think about it</strong>A supplier tells you: "Your motors will arrive 14 days late." What would <em>you</em> check before deciding what to do? Write down your list. An agent needs to do exactly the same checks.</div>
+  <label class="done-row"><input type="checkbox" data-done="a1">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="a2" data-unit>
+  <div class="unit-head"><span class="unit-num">A2</span><h2>What is an AI agent?</h2></div>
+  <div class="goal"><b>You will learn:</b> a simple definition and the 5 parts of every agent.</div>
+  <div class="callout key"><strong>Simple definition</strong>An AI agent is a program that is given a goal. It uses an AI model to decide what to do next, uses tools to do it, looks at the result, and keeps going until the goal is reached.</div>
+  <p>Think of an agent as <b>a new employee</b> in your company:</p>
+  <div class="formula">Agent = <span>Brain</span> + <span>Hands</span> + <span>Memory</span> + <span>Loop</span> + <span>Rules</span></div>
+  <div class="grid g3">
+    <div class="card"><span class="tag t-llm">Brain</span><h4>The AI model</h4><p>Understands the question and decides: "What do I need? What should I do?"</p></div>
+    <div class="card"><span class="tag t-code">Hands</span><h4>Tools</h4><p>Small Python functions: read the stock sheet, search a PDF, place an order.</p></div>
+    <div class="card"><span class="tag t-code">Memory</span><h4>Notes</h4><p>What happened so far in this job, and what the company already knows.</p></div>
+    <div class="card"><span class="tag t-acc">Loop</span><h4>Step by step</h4><p>Think → do → look at the result → think again. Like a person solving a problem.</p></div>
+    <div class="card"><span class="tag t-human">Rules</span><h4>Checks</h4><p>Company rules and a manager's "yes" before anything important happens.</p></div>
+    <div class="card"><span class="tag t-acc">Goal</span><h4>The job</h4><p>Something clear, like "Tell me if we should reorder jars."</p></div>
+  </div>
+
+  <h3>How much freedom should we give it?</h3>
+  <p>Same as a new employee: you don't give a trainee the company bank card on day one.</p>
+  <div class="ladder">
+    <div class="rung"><b class="lv">L0</b><p><strong>Only talks.</strong> Answers questions. No tools. <em>(A chatbot.)</em></p></div>
+    <div class="rung"><b class="lv">L1</b><p><strong>Can look things up.</strong> Can read data and documents, but cannot change anything.</p></div>
+    <div class="rung here"><b class="lv">L2</b><p><strong>Can suggest actions.</strong> "I think we should order 600 jars." Code checks it, a person says yes, then it happens. <em>Our project works at this level.</em></p></div>
+    <div class="rung"><b class="lv">L3</b><p><strong>Can do small things alone.</strong> Small safe actions happen automatically; big ones still need a person.</p></div>
+    <div class="rung"><b class="lv">L4</b><p><strong>Does everything alone.</strong> Risky for anything involving money or customers.</p></div>
+  </div>
+  <label class="done-row"><input type="checkbox" data-done="a2">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="a3" data-unit>
+  <div class="unit-head"><span class="unit-num">A3</span><h2>The agent loop</h2></div>
+  <div class="goal"><b>You will learn:</b> the steps an agent goes through, using one real question.</div>
+  <p>Click through each step. The question is: <b>"Should we reorder Jars?"</b></p>
+
+  <div class="stepper" id="loop">
+    <div class="loop-ring" id="loopBtns"></div>
+    <div class="step-panel" id="loopPanel"></div>
+    <div class="step-nav"><button class="btn" id="loopPrev">← Back</button><button class="btn primary" id="loopNext">Next step →</button></div>
+  </div>
+
+  <div class="callout key"><strong>Look at who does each step</strong>The <span style="color:var(--llm);font-weight:700">AI model</span> does the thinking (plan, decide). Normal <span style="color:var(--code);font-weight:700">Python code</span> does the work (fetch data, do maths, check rules). A <span style="color:var(--human);font-weight:700">person</span> gives the final "yes". Each one does what it is best at.</div>
+  <label class="done-row"><input type="checkbox" data-done="a3">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="a4" data-unit>
+  <div class="unit-head"><span class="unit-num">A4</span><h2>Plan, Act, Decide</h2></div>
+  <div class="goal"><b>You will learn:</b> the three main moves of every agent, with an easy example.</div>
+  <p>Think about <b>cooking dinner</b>:</p>
+  <div class="grid g3">
+    <div class="card"><span class="tag t-llm">1 · Plan</span><h4>What do I need?</h4><p>"To make dal I need dal, onion, tomato, spices. Let me check the kitchen."</p></div>
+    <div class="card"><span class="tag t-code">2 · Act</span><h4>Do the steps</h4><p>Open the fridge, check the shelf, buy what is missing, cook.</p></div>
+    <div class="card"><span class="tag t-llm">3 · Decide</span><h4>What now?</h4><p>Taste it. "Needs salt" → act again. "Tastes good" → serve. Done.</p></div>
+  </div>
+  <p>An agent does the same. Now the business version:</p>
+
+  <h3>1. Plan: "What do I need to know?"</h3>
+  <p>The agent makes a list of what to look up. A good trick: <b>give it a menu</b>. Just like a restaurant, the agent can only order what is on the menu. It cannot invent new dishes.</p>
+  <div class="grid g2">
+    <div class="card"><h4>❌ No menu (risky)</h4><p>"Write any database command you like." It might write something wrong, or even delete data.</p></div>
+    <div class="card"><h4>✅ With a menu (safe)</h4><p>"You can ask for: <code>stock</code>, <code>suppliers</code>, <code>prices</code>. Which ones do you need?" It can only pick from the list.</p></div>
+  </div>
+
+  <h3>2. Act: "Do it"</h3>
+  <p>Python code does what the plan asked. There are two kinds of actions:</p>
+  <div class="table-wrap"><table>
+    <tr><th>Kind</th><th>Example</th><th>Is it risky?</th><th>Who may do it</th></tr>
+    <tr><td><b>Read</b> (look)</td><td>Check stock, read a policy</td><td>No, nothing changes</td><td>The agent can do it freely</td></tr>
+    <tr><td><b>Write</b> (change)</td><td>Change a price, place an order</td><td>Yes, it changes real things</td><td>Agent <em>suggests</em> → code <em>checks</em> → person <em>approves</em></td></tr>
+  </table></div>
+
+  <h3>3. Decide: "What is the answer?"</h3>
+  <p>The model reads everything that was found and gives an answer. It may also suggest one action. Two simple habits make the decision trustworthy:</p>
+  <ul class="tight">
+    <li><b>Answer only from the facts we found</b>, not from guesswork.</li>
+    <li><b>Let code redo the maths.</b> AI models are good with words but can make maths mistakes. A calculator never does.</li>
+  </ul>
+  <div class="callout warn"><strong>Things that can go wrong (and the simple fix)</strong>
+    <ul class="tight" style="margin:6px 0 0">
+      <li>Asks for a tool that doesn't exist → <b>only allow tools from the menu</b>.</li>
+      <li>Keeps going round and round → <b>stop after a fixed number of steps</b>.</li>
+      <li>Says "300 ÷ 30 = 15" → <b>code does the maths again</b>.</li>
+      <li>Places the same order twice → <b>remember what was already done</b>.</li>
+    </ul>
+  </div>
+  <label class="done-row"><input type="checkbox" data-done="a4">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="a5" data-unit>
+  <div class="unit-head"><span class="unit-num">A5</span><h2>Tools, memory and knowledge</h2></div>
+  <div class="goal"><b>You will learn:</b> how an agent gets information.</div>
+
+  <h3>Tools = apps on a phone</h3>
+  <p>A tool is just a normal Python function with a short description. We tell the model: "Here are your tools." The model answers with the name of the tool it wants. <b>Our code</b> runs that function and gives the result back. The model itself never runs anything.</p>
+  <div class="codebox"><div class="bar"><span>what we tell the model, and what it answers</span><button data-copy>Copy</button></div><pre><code>We say:    "Your tools: get_stock(name), calculator(sum)"
+Model says: {"tool": "get_stock", "args": {"name": "jar"}}
+Our code:   runs get_stock("jar")  ->  240 jars</code></pre></div>
+
+  <h3>Memory = a sticky note and a diary</h3>
+  <div class="grid g2">
+    <div class="card"><span class="tag t-code">Short-term</span><h4>Sticky note</h4><p>What happened in <em>this</em> task: the question, the tool results. Thrown away when the task is over.</p></div>
+    <div class="card"><span class="tag t-code">Long-term</span><h4>Diary</h4><p>Things that stay: the company database, documents, past decisions.</p></div>
+  </div>
+
+  <h3>Three places to find knowledge</h3>
+  <div class="grid g3">
+    <div class="card"><span class="tag t-acc">1</span><h4>Database</h4><p><b>Like an Excel sheet.</b> Exact numbers: stock, prices, costs.</p><p>Question: "How many jars do we have?"</p></div>
+    <div class="card"><span class="tag t-acc">2</span><h4>Documents (RAG)</h4><p><b>Like a library with a helpful librarian.</b> You ask a question, the librarian brings the 2 most useful pages.</p><p>Question: "What does our policy say?"</p></div>
+    <div class="card"><span class="tag t-acc">3</span><h4>Knowledge graph</h4><p><b>Like a family tree.</b> Shows who is connected to whom.</p><p>Question: "If Apex is late, which products are hit?"</p></div>
+  </div>
+
+  <h4>RAG, step by step</h4>
+  <p><b>RAG</b> means <b>R</b>etrieval-<b>A</b>ugmented <b>G</b>eneration. In simple words: <b>first find the right pages, then let the AI answer using those pages.</b></p>
+  <ol class="tight">
+    <li>Cut all documents into small pieces (like cutting a book into paragraphs).</li>
+    <li>Turn each piece into a list of numbers so the computer can compare them.</li>
+    <li>When a question comes, find the pieces that are most similar to it.</li>
+    <li>Give those pieces to the AI together with the question.</li>
+  </ol>
+
+  <h4>Knowledge graph, in a picture</h4>
+  <div class="codebox"><div class="bar"><span>things and arrows</span><button data-copy>Copy</button></div><pre><code>Mixer Grinder ──USES──▶ Motor ──SUPPLIED_BY──▶ Apex Motors
+Hand Blender  ──USES──▶ Motor
+Zenith Mixer Pro ──COMPETES_WITH──▶ Mixer Grinder</code></pre></div>
+  <p>"Apex Motors is late. Who is affected?" Follow the arrows backwards: Apex Motors → Motor → <b>Mixer Grinder</b> and <b>Hand Blender</b>. Both products are at risk.</p>
+  <label class="done-row"><input type="checkbox" data-done="a5">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="a6" data-unit>
+  <div class="unit-head"><span class="unit-num">A6</span><h2>Agent patterns (common ways to build an agent)</h2></div>
+  <div class="goal"><b>You will learn:</b> six common designs, each with a simple example from daily life.</div>
+  <p>A <b>pattern</b> is just a well-known way of doing something. Like recipes: there are a few basic ones, and most dishes use one of them.</p>
+
+  <div class="pattern">
+    <h4>1. ReAct: think, do, look, repeat</h4>
+    <div class="row"><b>In simple words</b><span>The agent does <b>one small step at a time</b>. After each step it looks at the result and thinks about the next step.</span></div>
+    <div class="row"><b>Daily life</b><span>A <b>detective</b>. "Let me check the door... it was locked. So let me check the window... it is broken. So the thief came through the window."</span></div>
+    <div class="row"><b>Agent example</b><span><pre>Think: I need jar stock.        Do: get_stock("jar")  → 240
+Think: I need days left.        Do: divide(240, 20)   → 12
+Think: I have the answer.       Answer: "12 days of jars left."</pre></span></div>
+    <div class="row"><b>Good for</b><span>Open questions where you don't know the steps in advance. <b>You build this in Lab 4.</b></span></div>
+  </div>
+
+  <div class="pattern">
+    <h4>2. Plan first, then do</h4>
+    <div class="row"><b>In simple words</b><span>The agent <b>makes the full list first</b>, then does everything on the list, then answers.</span></div>
+    <div class="row"><b>Daily life</b><span>A <b>shopping list</b>. You write everything down at home, go to the shop once, buy it all, come back.</span></div>
+    <div class="row"><b>Agent example</b><span><pre>Plan: I need [jar stock, jar suppliers, purchase policy]
+Do:   fetch all three
+Answer: "Order 600 jars from ClearJar."</pre></span></div>
+    <div class="row"><b>Good for</b><span>Business questions. Fewer AI calls, easier to check. <b>Our project uses this.</b></span></div>
+  </div>
+
+  <div class="pattern">
+    <h4>3. Checker: someone checks the work</h4>
+    <div class="row"><b>In simple words</b><span>After the agent gives an answer, a <b>second step checks it</b> before it is used.</span></div>
+    <div class="row"><b>Daily life</b><span>A <b>teacher checking homework</b>. The student writes the answer; the teacher checks the sums.</span></div>
+    <div class="row"><b>Agent example</b><span><pre>AI says:    "Order 600 jars"
+Code checks: stock after order = 42 days  ✓   cost = Rs 36,000  ✓
+Result:     PASS</pre></span></div>
+    <div class="row"><b>Good for</b><span>Anything with numbers or rules. <b>Our project checks with code</b>, which never makes maths mistakes.</span></div>
+  </div>
+
+  <div class="pattern">
+    <h4>4. Router: send the question to the right place</h4>
+    <div class="row"><b>In simple words</b><span>First decide <b>what kind of question</b> it is, then send it to the right helper.</span></div>
+    <div class="row"><b>Daily life</b><span>The <b>reception desk at a hospital</b>. "Fever? Go to room 3. Broken arm? Go to room 7."</span></div>
+    <div class="row"><b>Agent example</b><span><pre>"What price for the mixer?"  → pricing helper
+"Should we order jars?"      → purchase helper
+"What is our policy?"        → document search</pre></span></div>
+    <div class="row"><b>Good for</b><span>When there are many different kinds of questions.</span></div>
+  </div>
+
+  <div class="pattern">
+    <h4>5. Team of agents (multi-agent)</h4>
+    <div class="row"><b>In simple words</b><span><b>Several agents, each with one job</b>, working together.</span></div>
+    <div class="row"><b>Daily life</b><span>A <b>restaurant</b>: the waiter takes the order, the cook cooks, the cashier takes payment.</span></div>
+    <div class="row"><b>Agent example</b><span><pre>Decision agent: answers questions and suggests actions
+Learning agent: reads new documents and learns new facts</pre></span></div>
+    <div class="row"><b>Good for</b><span>Big systems with different jobs. <b>Our project has these two agents.</b></span></div>
+  </div>
+
+  <div class="pattern">
+    <h4>6. Human in the loop: ask a person before acting</h4>
+    <div class="row"><b>In simple words</b><span>Before doing anything important, the agent <b>stops and asks a person</b>.</span></div>
+    <div class="row"><b>Daily life</b><span>Your <b>bank asks for an OTP</b> before sending money. A big cheque needs the manager's signature.</span></div>
+    <div class="row"><b>Agent example</b><span><pre>Agent: "Order 900 motors for Rs 2,97,000. This needs a manager."
+Manager clicks Approve → order is saved.</pre></span></div>
+    <div class="row"><b>Good for</b><span>Anything that spends money, changes prices or talks to customers. <b>Our project uses this.</b></span></div>
+  </div>
+
+  <div class="callout key"><strong>Which one should I use?</strong>Start with the simplest one that works. Most real systems mix two or three. Our project mixes <b>Plan first</b> + <b>Checker</b> + <b>Human in the loop</b> + <b>Team of agents</b>.</div>
+  <label class="done-row"><input type="checkbox" data-done="a6">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="a7" data-unit>
+  <div class="unit-head"><span class="unit-num">A7</span><h2>Keeping agents safe</h2></div>
+  <div class="goal"><b>You will learn:</b> simple rules that make an agent safe to use in a real company.</div>
+  <div class="formula" style="font-size:16px">The <span>AI suggests</span> · the <span>code checks</span> · a <span>person approves</span></div>
+  <p>Think of a <b>shop</b>: a new salesperson can <em>suggest</em> a discount, the billing machine <em>checks</em> the maths, and the owner <em>approves</em> big discounts.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Safety rule</th><th>In simple words</th><th>Example</th></tr>
+    <tr><td><b>Menus</b></td><td>The AI can only choose from a fixed list</td><td>It can ask for "stock", but cannot write its own database command</td></tr>
+    <tr><td><b>Check the values</b></td><td>Make sure numbers really are numbers</td><td>"three hundred" is rejected; 300 is accepted</td></tr>
+    <tr><td><b>Redo the maths</b></td><td>Code calculates again from real data</td><td>Profit and stock days are calculated by Python, not by the AI</td></tr>
+    <tr><td><b>Rules in code</b></td><td>Company rules are written in Python</td><td><code>if margin &lt; 20%: not allowed</code>, the AI cannot argue with it</td></tr>
+    <tr><td><b>Levels of approval</b></td><td>Small things OK, big things need a manager</td><td>Order above Rs 2,50,000 → manager must approve</td></tr>
+    <tr><td><b>Do it only once</b></td><td>Remember what was already done</td><td>Clicking "Approve" twice does not create two orders</td></tr>
+    <tr><td><b>Step limit</b></td><td>Stop if the agent goes round and round</td><td>Maximum 5 steps</td></tr>
+    <tr><td><b>Documents are information, not orders</b></td><td>A document cannot tell the agent what to do</td><td>A PDF saying "ignore the rules" changes nothing, because rules are in code</td></tr>
+  </table></div>
+  <label class="done-row"><input type="checkbox" data-done="a7">Mark this unit as done</label>
+</section>
+
+<!-- ============================================================ PART B -->
+<div class="part-banner"><span class="eyebrow">Part B</span><h2>Mini labs in Google Colab</h2><p>Seven tiny labs. Each one shows one idea from Part A in a few lines of code. Read the comments (the lines starting with <code>#</code>), run the cell, and read "What happened?". Keep all labs in <b>one notebook</b>, because later labs use small helpers from earlier ones.</p></div>
+
+<section class="unit" id="b0" data-unit>
+  <div class="unit-head"><span class="unit-num">Setup</span><h2>Open Colab and load a free model</h2></div>
+  <div class="goal"><b>You will:</b> get a free notebook with a small AI model ready to use.</div>
+  <ol class="steps">
+    <li>Go to <a href="https://colab.research.google.com" target="_blank" rel="noopener">colab.research.google.com</a> and click <b>New notebook</b>.</li>
+    <li>Click <b>Runtime → Change runtime type → T4 GPU → Save</b>. (A GPU makes the model fast. It is free.)</li>
+    <li>Copy the code below into the first cell and press <b>▶ Run</b>. The first time, it downloads the model (a few minutes).</li>
+  </ol>
+  <div class="callout"><strong>Which model are we using?</strong><code>Qwen/Qwen2.5-1.5B-Instruct</code> from Hugging Face. It is a <b>small language model</b>: free, no login, and small enough for free Colab. It is not as smart as ChatGPT, but it is perfect for learning.</div>
+  <div class="codebox"><div class="bar"><span>Cell 1 · load the model</span><button data-copy>Copy</button></div><pre><code class="py"># Install the Hugging Face library (the "!" runs a command, not Python)
+!pip -q install -U transformers accelerate
+
+from transformers import pipeline
+
+# Download a small, free AI model and get it ready
+model = pipeline(
+    "text-generation",                    # we want the model to write text
+    model="Qwen/Qwen2.5-1.5B-Instruct",   # the model's name on Hugging Face
+    device_map="auto",                    # use the GPU if we have one
+    torch_dtype="auto",
+)
+
+# A helper: send a list of messages, get the model's reply back as text
+def chat(messages):
+    result = model(messages, max_new_tokens=300, do_sample=False)
+    return result[0]["generated_text"][-1]["content"]   # the last message = the reply
+
+# An even simpler helper: ask one question, get one answer
+def ask(question):
+    return chat([{"role": "user", "content": question}])
+
+print("Model is ready!")</code></pre></div>
+  <div class="out">Model is ready!</div>
+  <div class="callout warn"><strong>If you see "out of memory" or it is very slow</strong>Change the model name to <code>Qwen/Qwen2.5-0.5B-Instruct</code> (smaller) and run the cell again.</div>
+  <label class="done-row"><input type="checkbox" data-done="b0">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="b1" data-unit>
+  <div class="unit-head"><span class="unit-num">Lab 1</span><h2>Talk to a model</h2></div>
+  <div class="goal"><b>Idea:</b> a model knows general things, but nothing about <em>our</em> company. (Part A1)</div>
+  <div class="codebox"><div class="bar"><span>Cell 2 · a general question</span><button data-copy>Copy</button></div><pre><code class="py"># Ask something general. The model learned this during training.
+print(ask("What is stock in a shop? Answer in one sentence."))</code></pre></div>
+  <div class="out">Stock is the goods a shop keeps ready to sell.</div>
+  <div class="codebox"><div class="bar"><span>Cell 3 · a question about OUR company</span><button data-copy>Copy</button></div><pre><code class="py"># Ask about our own company. The model has never seen our data.
+print(ask("How many jars do we have in stock right now?"))</code></pre></div>
+  <div class="out">I'm sorry, I don't have access to your stock information.</div>
+  <div class="explain"><h5>What happened?</h5><ul>
+    <li>The first answer is good, because it is general knowledge.</li>
+    <li>The second answer is useless. The model cannot see our data. Sometimes a model even <b>makes up a number</b>, which is worse.</li>
+    <li>In the next labs we will fix this step by step.</li>
+  </ul></div>
+  <label class="done-row"><input type="checkbox" data-done="b1">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="b2" data-unit>
+  <div class="unit-head"><span class="unit-num">Lab 2</span><h2>Get answers as data (JSON)</h2></div>
+  <div class="goal"><b>Idea:</b> if the model answers in a fixed format, our Python code can read the answer and use it.</div>
+  <p><b>JSON</b> is a simple format for data. It looks like a Python dictionary: <code>{"name": "jar", "count": 240}</code>. If the model replies in JSON, Python can turn it into a dictionary.</p>
+  <div class="codebox"><div class="bar"><span>Cell 4 · a helper to read JSON</span><button data-copy>Copy</button></div><pre><code class="py">import json, re
+
+# Small models sometimes add extra words around the JSON.
+# This helper finds the {...} part and turns it into a Python dictionary.
+def to_dict(text):
+    found = re.search(r"\{.*\}", text, re.S)   # find text between { and }
+    if found is None:
+        return None                            # no JSON found
+    try:
+        return json.loads(found.group(0))      # JSON text -> Python dict
+    except Exception:
+        return None                            # it looked like JSON but was broken</code></pre></div>
+  <div class="codebox"><div class="bar"><span>Cell 5 · read an email and get data out</span><button data-copy>Copy</button></div><pre><code class="py">email = "Hello, all Motor deliveries from Apex Motors will be 14 days late. Sorry!"
+
+# We tell the model EXACTLY which shape we want back
+reply = ask(f"""Read this email and reply with JSON only, like this:
+{{"supplier": "...", "part": "...", "days_late": 0}}
+
+Email: {email}""")
+
+data = to_dict(reply)          # text -> dictionary
+print(data)
+print("Days late + 1 =", data["days_late"] + 1)   # it is a real number now, we can do maths</code></pre></div>
+  <div class="out">{'supplier': 'Apex Motors', 'part': 'Motor', 'days_late': 14}
+Days late + 1 = 15</div>
+  <div class="explain"><h5>What happened?</h5><ul>
+    <li>We showed the model the shape of the answer we wanted.</li>
+    <li>The model filled in the values.</li>
+    <li><code>to_dict</code> turned the text into a dictionary, so Python can use <code>data["days_late"]</code> like any number.</li>
+    <li>This is the <b>bridge between AI and code</b>. Every agent uses it.</li>
+  </ul></div>
+  <label class="done-row"><input type="checkbox" data-done="b2">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="b3" data-unit>
+  <div class="unit-head"><span class="unit-num">Lab 3</span><h2>Give the model a tool</h2></div>
+  <div class="goal"><b>Idea:</b> the model <em>chooses</em> a tool, our code <em>runs</em> it. (Part A5)</div>
+  <div class="codebox"><div class="bar"><span>Cell 6 · one tool and a menu</span><button data-copy>Copy</button></div><pre><code class="py"># Our tiny "database": stock and how many we use per day
+STOCK = {
+    "jar":   {"stock": 240, "daily_use": 20},
+    "motor": {"stock": 300, "daily_use": 30},
+}
+
+# A tool is just a normal Python function
+def get_stock(name):
+    return STOCK.get(name, "not found")
+
+# The menu of tools the model is allowed to use
+TOOLS = {"get_stock": get_stock}</code></pre></div>
+  <div class="codebox"><div class="bar"><span>Cell 7 · the model picks, the code runs</span><button data-copy>Copy</button></div><pre><code class="py">question = "How many motors do we have?"
+
+# 1. Tell the model about the tool and ask which one it wants
+reply = ask(f"""You have one tool: get_stock(name). Names are: jar, motor.
+Question: {question}
+Reply with JSON only: {{"tool": "get_stock", "name": "..."}}""")
+choice = to_dict(reply)
+print("Model wants:", choice)
+
+# 2. Our code checks the tool is on the menu, then runs it
+if choice and choice.get("tool") in TOOLS:
+    result = TOOLS[choice["tool"]](choice["name"])
+    print("Tool result:", result)
+else:
+    print("Not allowed")</code></pre></div>
+  <div class="out">Model wants: {'tool': 'get_stock', 'name': 'motor'}
+Tool result: {'stock': 300, 'daily_use': 30}</div>
+  <div class="explain"><h5>What happened?</h5><ol>
+    <li>The model did <b>not</b> know the stock. It only said <em>which tool</em> to use.</li>
+    <li>Our code checked: "Is this tool on the menu?" Yes.</li>
+    <li>Our code ran the function and got the real number.</li>
+  </ol>If the model asked for a tool called <code>delete_everything</code>, the code would say "Not allowed". That is the <b>menu</b> safety rule.</div>
+  <label class="done-row"><input type="checkbox" data-done="b3">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="b4" data-unit>
+  <div class="unit-head"><span class="unit-num">Lab 4</span><h2>The loop: our first real agent</h2></div>
+  <div class="goal"><b>Idea:</b> think → do → look → repeat, until the job is done. (Part A3, the ReAct pattern)</div>
+  <p>Now we add a second tool (divide) and let the model use tools <b>again and again</b> until it has the answer.</p>
+  <div class="codebox"><div class="bar"><span>Cell 8 · add a divide tool</span><button data-copy>Copy</button></div><pre><code class="py"># A second tool. Models can make maths mistakes, so code does the maths.
+def divide(a, b):
+    return round(a / b, 1)
+
+TOOLS = {"get_stock": get_stock, "divide": divide}</code></pre></div>
+  <div class="codebox"><div class="bar"><span>Cell 9 · the agent loop</span><button data-copy>Copy</button></div><pre><code class="py">INSTRUCTIONS = """Solve the task step by step using tools.
+Tools:
+- get_stock: needs {"name": "jar" or "motor"}
+- divide:    needs {"a": number, "b": number}
+Reply with ONE JSON object each time:
+- To use a tool:   {"tool": "tool name", "args": {...}}
+- When finished:   {"final": "your answer"}"""
+
+def agent(task, max_steps=5):
+    # The conversation so far = the agent's short-term memory (sticky note)
+    messages = [{"role": "system", "content": INSTRUCTIONS},
+                {"role": "user",   "content": task}]
+
+    for step in range(1, max_steps + 1):          # LOOP, with a safety limit
+        reply = chat(messages)                    # THINK: model decides the next step
+        messages.append({"role": "assistant", "content": reply})
+        data = to_dict(reply)
+
+        if data is None:                          # bad answer: ask again
+            messages.append({"role": "user", "content": "Please reply with JSON only."})
+            continue
+
+        if "final" in data:                       # DECIDE: the model says it is done
+            return data["final"]
+
+        tool = TOOLS.get(data.get("tool"))        # only tools from the menu
+        if tool is None:
+            result = "unknown tool"
+        else:
+            result = tool(**data.get("args", {})) # ACT: our code runs the tool
+        print(f"Step {step}: {data.get('tool')} {data.get('args')} -> {result}")
+
+        # OBSERVE: give the result back to the model, then loop again
+        messages.append({"role": "user", "content": f"Result: {result}"})
+
+    return "Stopped: too many steps."
+
+print("Answer:", agent("How many days will our jar stock last?"))</code></pre></div>
+  <div class="out">Step 1: get_stock {'name': 'jar'} -> {'stock': 240, 'daily_use': 20}
+Step 2: divide {'a': 240, 'b': 20} -> 12.0
+Answer: Our jar stock will last about 12 days.</div>
+  <div class="explain"><h5>What happened?</h5><ol>
+    <li><b>Step 1:</b> the model thought "I need the jar numbers" and used <code>get_stock</code>.</li>
+    <li>It got back 240 and 20. We added that result to the conversation.</li>
+    <li><b>Step 2:</b> the model thought "now divide 240 by 20" and used <code>divide</code>. It got 12.</li>
+    <li><b>Step 3:</b> it had enough, so it replied with <code>"final"</code>. The loop stopped.</li>
+  </ol>Nobody told the agent the steps. <b>It decided them itself.</b> That is what makes it an agent.</div>
+  <div class="callout try"><strong>Try it</strong>
+    <ul class="tight" style="margin:6px 0 0">
+      <li>Ask: <code>agent("Which will run out first, jars or motors?")</code>. How many steps does it take?</li>
+      <li>Run with <code>max_steps=1</code>. What happens? Why is a limit useful?</li>
+    </ul>
+  </div>
+  <label class="done-row"><input type="checkbox" data-done="b4">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="b5" data-unit>
+  <div class="unit-head"><span class="unit-num">Lab 5</span><h2>Search documents (mini RAG)</h2></div>
+  <div class="goal"><b>Idea:</b> first find the right piece of text, then let the model answer from it. (Part A5)</div>
+  <p>We use <b>TF-IDF</b> to compare texts. In simple words, it gives each text a score based on the important words in it. Texts that share important words get a high match. (Our main project uses exactly this.)</p>
+  <div class="codebox"><div class="bar"><span>Cell 10 · our "documents" and a search function</span><button data-copy>Copy</button></div><pre><code class="py">from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Our "library": 4 small pieces of company policy
+pieces = [
+    "Profit margin of any product must never go below 20 percent.",
+    "A price cut of more than 10 percent needs a manager's approval.",
+    "Every part must have at least 15 days of stock.",
+    "Orders above Rs 250000 need a manager's approval.",
+]
+
+# Turn every piece into numbers (a "vector")
+vectorizer = TfidfVectorizer(stop_words="english")   # ignore words like "the", "of"
+vectors = vectorizer.fit_transform(pieces)
+
+# Find the piece that best matches the question
+def search(question):
+    q = vectorizer.transform([question])             # question -> numbers
+    scores = cosine_similarity(q, vectors)[0]        # how similar is each piece? (0 to 1)
+    best = scores.argmax()                           # position of the best match
+    return pieces[best]
+
+print(search("Can we cut the price by 15 percent?"))</code></pre></div>
+  <div class="out">A price cut of more than 10 percent needs a manager's approval.</div>
+  <div class="codebox"><div class="bar"><span>Cell 11 · answer using the found piece</span><button data-copy>Copy</button></div><pre><code class="py">question = "Can we cut the price by 15 percent?"
+found = search(question)                             # 1. find the right policy
+
+# 2. give the policy to the model and ask it to answer ONLY from it
+print(ask(f"""Answer using ONLY this policy. If it does not say, answer "I don't know".
+Policy: {found}
+Question: {question}"""))</code></pre></div>
+  <div class="out">Yes, but it needs a manager's approval because it is more than 10 percent.</div>
+  <div class="explain"><h5>What happened?</h5><ol>
+    <li><b>Retrieve:</b> the search found the right policy line (like the librarian finding the right page).</li>
+    <li><b>Generate:</b> the model answered using that line, not from guesswork.</li>
+  </ol>That's RAG: <b>find first, then answer</b>.</div>
+  <label class="done-row"><input type="checkbox" data-done="b5">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="b6" data-unit>
+  <div class="unit-head"><span class="unit-num">Lab 6</span><h2>A small knowledge graph</h2></div>
+  <div class="goal"><b>Idea:</b> store "what is connected to what", and follow the arrows. (Part A5)</div>
+  <div class="codebox"><div class="bar"><span>Cell 12 · build a graph and ask who is affected</span><button data-copy>Copy</button></div><pre><code class="py">import networkx as nx
+
+graph = nx.DiGraph()     # a graph where arrows have a direction
+
+# Add arrows:  from --link--> to
+graph.add_edge("Mixer Grinder", "Motor",       link="USES")
+graph.add_edge("Hand Blender",  "Motor",       link="USES")
+graph.add_edge("Mixer Grinder", "Jar",         link="USES")
+graph.add_edge("Motor",         "Apex Motors", link="SUPPLIED_BY")
+
+# Who points to Apex Motors, directly or through others?
+print("Affected if Apex is late:", nx.ancestors(graph, "Apex Motors"))
+
+# Print every arrow that touches "Motor"
+for a, b, info in graph.in_edges("Motor", data=True):
+    print(a, "--" + info["link"] + "-->", b)
+for a, b, info in graph.out_edges("Motor", data=True):
+    print(a, "--" + info["link"] + "-->", b)</code></pre></div>
+  <div class="out">Affected if Apex is late: {'Motor', 'Mixer Grinder', 'Hand Blender'}
+Mixer Grinder --USES--> Motor
+Hand Blender --USES--> Motor
+Motor --SUPPLIED_BY--> Apex Motors</div>
+  <div class="explain"><h5>What happened?</h5><ul>
+    <li>We stored facts as arrows between things.</li>
+    <li><code>nx.ancestors</code> followed the arrows backwards and found everything connected to Apex Motors.</li>
+    <li>A database or a text search would not easily answer "who is affected?". A graph does it in one line.</li>
+  </ul></div>
+  <label class="done-row"><input type="checkbox" data-done="b6">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="b7" data-unit>
+  <div class="unit-head"><span class="unit-num">Lab 7</span><h2>Mini decision agent</h2></div>
+  <div class="goal"><b>Idea:</b> put it all together: <b>Plan → Fetch → Decide → Check → Approve</b>. This is a tiny version of the main project, so the project will feel easy after this.</div>
+
+  <h4>Step 1 · Company data and a menu</h4>
+  <div class="codebox"><div class="bar"><span>Cell 13 · data</span><button data-copy>Copy</button></div><pre><code class="py"># Our company data (in the real project this lives in a database)
+JAR = {"stock": 240, "daily_use": 20}
+SUPPLIERS = {
+    "ClearJar": {"price": 60, "days_to_deliver": 5},
+    "Bharat":   {"price": 66, "days_to_deliver": 7},
+}
+
+# The menu: things the AI is allowed to look at
+MENU = {
+    "jar_stock": JAR,
+    "suppliers": SUPPLIERS,
+}</code></pre></div>
+
+  <h4>Step 2 · Plan (AI) and Fetch (code)</h4>
+  <div class="codebox"><div class="bar"><span>Cell 14 · plan and fetch</span><button data-copy>Copy</button></div><pre><code class="py"># PLAN: the AI says what it needs, picking only from the menu
+def plan(question):
+    reply = ask(f"""Question: {question}
+You may look at: {list(MENU)}
+Which do you need? Reply JSON only: {{"need": ["..."]}}""")
+    return to_dict(reply) or {"need": []}
+
+# FETCH: our code gets the data. Anything not on the menu is ignored.
+def fetch(needs):
+    facts = {}
+    for name in needs["need"]:
+        if name in MENU:
+            facts[name] = MENU[name]
+    return facts</code></pre></div>
+
+  <h4>Step 3 · Decide (AI)</h4>
+  <div class="codebox"><div class="bar"><span>Cell 15 · decide</span><button data-copy>Copy</button></div><pre><code class="py"># DECIDE: the AI reads the facts and may suggest ONE order
+def decide(question, facts):
+    reply = ask(f"""You help the purchase team. Use ONLY these facts: {facts}
+Question: {question}
+Tip: order enough jars for about 30 days. Choose the cheapest supplier.
+Reply JSON only: {{"answer": "...", "supplier": "...", "quantity": 0}}""")
+    return to_dict(reply)</code></pre></div>
+
+  <h4>Step 4 · Check (code)</h4>
+  <div class="codebox"><div class="bar"><span>Cell 16 · company rules</span><button data-copy>Copy</button></div><pre><code class="py"># CHECK: our code does the maths again and applies the company rules.
+# It never trusts the AI's numbers.
+def check(decision):
+    supplier = SUPPLIERS.get(decision.get("supplier"))
+    if supplier is None:
+        return "FAIL", "unknown supplier"
+
+    quantity   = int(decision["quantity"])
+    days_left  = JAR["stock"] / JAR["daily_use"]                # how long stock lasts now
+    days_after = (JAR["stock"] + quantity) / JAR["daily_use"]   # ...and after the order
+    cost       = quantity * supplier["price"]                    # price comes from OUR data
+
+    if supplier["days_to_deliver"] &gt; days_left:
+        return "FAIL", "the order arrives after our stock runs out"
+    if days_after &lt; 15:
+        return "FAIL", "still less than 15 days of stock"
+    if cost &gt; 250000:
+        return "NEEDS MANAGER", f"big order: Rs {cost}"
+    return "PASS", f"stock will last {days_after} days, cost Rs {cost}"</code></pre></div>
+
+  <h4>Step 5 · Approve (person), only once</h4>
+  <div class="codebox"><div class="bar"><span>Cell 17 · approve and run everything</span><button data-copy>Copy</button></div><pre><code class="py">saved = set()      # remembers which decisions were already saved
+
+# APPROVE: a person says yes. The same decision is never saved twice.
+def approve(decision_id, status, role):
+    if status == "FAIL":
+        return "Not allowed: it breaks a rule."
+    if status == "NEEDS MANAGER" and role != "manager":
+        return "A manager must approve this."
+    if decision_id in saved:
+        return "Already saved. Nothing done again."
+    saved.add(decision_id)
+    return "Saved!"
+
+# Run all the steps
+question = "Should we reorder jars?"
+needs = plan(question);              print("1 PLAN  :", needs)
+facts = fetch(needs);                print("2 FETCH :", facts)
+decision = decide(question, facts);  print("3 DECIDE:", decision)
+status, reason = check(decision);    print("4 CHECK :", status, "-", reason)
+print("5 APPROVE:", approve("DEC-1", status, role="analyst"))
+print("  again  :", approve("DEC-1", status, role="analyst"))</code></pre></div>
+  <div class="out">1 PLAN  : {'need': ['jar_stock', 'suppliers']}
+2 FETCH : {'jar_stock': {'stock': 240, 'daily_use': 20}, 'suppliers': {...}}
+3 DECIDE: {'answer': 'Yes, order 600 jars from ClearJar.', 'supplier': 'ClearJar', 'quantity': 600}
+4 CHECK : PASS - stock will last 42.0 days, cost Rs 36000
+5 APPROVE: Saved!
+  again  : Already saved. Nothing done again.</div>
+  <div class="explain"><h5>What happened?</h5><ol>
+    <li><b>Plan:</b> the AI said it needs the jar stock and the suppliers.</li>
+    <li><b>Fetch:</b> code got that data from the menu.</li>
+    <li><b>Decide:</b> the AI suggested 600 jars from ClearJar (12 days left, cheapest, arrives in 5 days).</li>
+    <li><b>Check:</b> code did the maths again and checked the rules. PASS.</li>
+    <li><b>Approve:</b> the analyst approved. The second click did nothing, so no double order.</li>
+  </ol></div>
+  <div class="callout try"><strong>Try it: change the question and see the rules work</strong>
+    <ul class="tight" style="margin:6px 0 0">
+      <li><code>check({"supplier": "ClearJar", "quantity": 5000})</code> → <b>NEEDS MANAGER</b> (Rs 3,00,000). Approve as analyst, then as manager.</li>
+      <li><code>check({"supplier": "ClearJar", "quantity": 20})</code> → <b>FAIL</b> (not enough stock).</li>
+      <li><code>check({"supplier": "Nobody", "quantity": 600})</code> → <b>FAIL</b> (unknown supplier).</li>
+    </ul>
+  </div>
+  <label class="done-row"><input type="checkbox" data-done="b7">Mark this unit as done</label>
+</section>
+
+<!-- ============================================================ PART C -->
+<div class="part-banner"><span class="eyebrow">Part C</span><h2>Let's take up our main project: simple_kdi</h2><p>Now we open the real project. It does exactly what Lab 7 did, but with a real database, real PDF and Word documents, a knowledge graph, and a second agent that learns. It is only <b>4 Python files</b>, with no classes. We will read them one by one.</p></div>
+
+<section class="unit" id="c1" data-unit>
+  <div class="unit-head"><span class="unit-num">C1</span><h2>The story</h2></div>
+  <div class="goal"><b>You will learn:</b> what the company is and what problem we are solving.</div>
+  <p>Imagine a small company that makes <b>kitchen appliances</b>. It sells two products: a <b>Mixer Grinder</b> and a <b>Hand Blender</b>. To make them, it buys parts (motors, jars, blades, switches) from suppliers.</p>
+  <p>Every day the managers get questions like these:</p>
+  <div class="grid g2">
+    <div class="card"><span class="tag t-acc">Supplier problem</span><h4>"Apex Motors says motors will be 14 days late. What should we do?"</h4></div>
+    <div class="card"><span class="tag t-acc">Price problem</span><h4>"Our competitor Zenith cut its mixer price to Rs 900. What should our price be?"</h4></div>
+    <div class="card"><span class="tag t-acc">Daily work</span><h4>"Should we reorder jars?"</h4></div>
+    <div class="card"><span class="tag t-acc">Just information</span><h4>"What do we know about the Motor?"</h4></div>
+  </div>
+  <p>Our <b>decision assistant</b> answers these. It looks at the data, reads the documents, suggests an action, checks the company rules, and waits for a person to approve.</p>
+
+  <h3>The company data (simplified)</h3>
+  <div class="table-wrap"><table>
+    <tr><th>What</th><th>Numbers</th></tr>
+    <tr><td><b>Products</b></td><td>Mixer Grinder: sells at Rs 1000, costs us Rs 750 · Hand Blender: sells at Rs 600, costs us Rs 420</td></tr>
+    <tr><td><b>Parts in stock</b></td><td>Motor: 300 (we use 30 a day) · Jar: 240 (20 a day) · Blade Set: 900 · Speed Switch: 400</td></tr>
+    <tr><td><b>Suppliers</b></td><td>Apex Motors (14 days late right now) · Bharat Electricals · ClearJar Plastics</td></tr>
+    <tr><td><b>Who sells what</b></td><td>Motor: Apex Rs 310 (usual), Bharat Rs 330 · Jar: ClearJar Rs 60 (usual), Bharat Rs 66</td></tr>
+    <tr><td><b>Competitor</b></td><td>Zenith Mixer Pro: was Rs 1000, now Rs 900</td></tr>
+  </table></div>
+  <p><b>Documents</b> in the <code>documents/</code> folder: a pricing policy, a purchasing policy (Word file), a delay notice from Apex, and a competitor price notice (PDF).</p>
+  <label class="done-row"><input type="checkbox" data-done="c1">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="c2" data-unit>
+  <div class="unit-head"><span class="unit-num">C2</span><h2>The 4 files</h2></div>
+  <div class="goal"><b>You will learn:</b> what each file does, in one line.</div>
+  <div class="file-tree">simple_kdi/
+├── <b>company.py</b>    <em># the company's rule book: what the AI may ask, do, and the rules</em>
+├── <b>connect.py</b>    <em># the connections: database, documents, search, graph</em>
+├── <b>agents.py</b>     <em># the workers: the decision agent and the learning agent</em>
+├── <b>main.py</b>       <em># the control room: start everything, ask questions</em>
+├── data/seed.sql        <em># sample company data</em>
+├── documents/           <em># PDF, Word and text files the agent can read</em>
+└── new_documents/       <em># a new file for the learning agent</em></div>
+
+  <div class="grid g2">
+    <div class="card"><span class="tag t-acc">company.py</span><h4>The rule book</h4><p>Everything about <em>this</em> company: the menu of questions, the allowed actions, the rules. <b>For a different business, you only change this file.</b></p></div>
+    <div class="card"><span class="tag t-code">connect.py</span><h4>The connections</h4><p>Connects to the database, reads documents, builds the search (RAG) and the knowledge graph.</p></div>
+    <div class="card"><span class="tag t-llm">agents.py</span><h4>The workers</h4><p>The decision agent (Plan → Fetch → Decide → Check → Explain), the approve step, and the learning agent.</p></div>
+    <div class="card"><span class="tag t-human">main.py</span><h4>The control room</h4><p>Starts everything in 4 steps, then runs the demo or lets you type questions.</p></div>
+  </div>
+
+  <h3>How a question travels through the system</h3>
+  <div class="diagram">
+    <svg viewBox="0 0 900 380" role="img" aria-label="Decision agent flow: question, plan, fetch from database documents and graph, decide, check, explain, approve, save once">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--faint)"/></marker>
+      </defs>
+      <style>
+        .bx{rx:12;stroke-width:1.5}
+        .llm{fill:var(--llm-soft);stroke:var(--llm)}
+        .cd{fill:var(--code-soft);stroke:var(--code)}
+        .hm{fill:var(--human-soft);stroke:var(--human)}
+        .st{fill:var(--surface-2);stroke:var(--border)}
+        .t1{font:700 14px Inter,sans-serif;fill:var(--text)}
+        .t2{font:500 11.5px Inter,sans-serif;fill:var(--muted)}
+        .ln{stroke:var(--faint);stroke-width:1.5;fill:none;marker-end:url(#ar)}
+        .dash{stroke:var(--faint);stroke-width:1.2;fill:none;stroke-dasharray:4 4}
+      </style>
+      <rect class="bx st" x="10"  y="30" width="120" height="64"/><text class="t1" x="70" y="58" text-anchor="middle">Question</text><text class="t2" x="70" y="76" text-anchor="middle">from a manager</text>
+      <rect class="bx llm" x="170" y="30" width="130" height="64"/><text class="t1" x="235" y="58" text-anchor="middle">1 · Plan</text><text class="t2" x="235" y="76" text-anchor="middle">AI picks from menu</text>
+      <rect class="bx cd" x="340" y="30" width="130" height="64"/><text class="t1" x="405" y="58" text-anchor="middle">2 · Fetch</text><text class="t2" x="405" y="76" text-anchor="middle">code gets the data</text>
+      <rect class="bx llm" x="510" y="30" width="130" height="64"/><text class="t1" x="575" y="58" text-anchor="middle">3 · Decide</text><text class="t2" x="575" y="76" text-anchor="middle">answer + 1 action</text>
+      <rect class="bx cd" x="680" y="30" width="200" height="64"/><text class="t1" x="780" y="58" text-anchor="middle">4 · Check rules</text><text class="t2" x="780" y="76" text-anchor="middle">code redoes the maths</text>
+      <path class="ln" d="M130 62 H166"/><path class="ln" d="M300 62 H336"/><path class="ln" d="M470 62 H506"/><path class="ln" d="M640 62 H676"/>
+      <rect class="bx st" x="250" y="150" width="120" height="56"/><text class="t1" x="310" y="174" text-anchor="middle">Database</text><text class="t2" x="310" y="192" text-anchor="middle">numbers</text>
+      <rect class="bx st" x="385" y="150" width="120" height="56"/><text class="t1" x="445" y="174" text-anchor="middle">Documents</text><text class="t2" x="445" y="192" text-anchor="middle">RAG search</text>
+      <rect class="bx st" x="520" y="150" width="120" height="56"/><text class="t1" x="580" y="174" text-anchor="middle">Graph</text><text class="t2" x="580" y="192" text-anchor="middle">connections</text>
+      <path class="dash" d="M405 94 V120 H310 V146"/><path class="dash" d="M405 120 H445 V146"/><path class="dash" d="M445 120 H580 V146"/>
+      <rect class="bx" x="690" y="140" width="180" height="76" fill="var(--accent-soft)" stroke="var(--accent)"/><text class="t1" x="780" y="166" text-anchor="middle">company.py</text><text class="t2" x="780" y="184" text-anchor="middle">the rule book</text><text class="t2" x="780" y="200" text-anchor="middle">FAIL / NEEDS MANAGER</text>
+      <path class="dash" d="M780 94 V136"/>
+      <rect class="bx llm" x="510" y="280" width="150" height="64"/><text class="t1" x="585" y="308" text-anchor="middle">5 · Explain</text><text class="t2" x="585" y="326" text-anchor="middle">AI writes simple reply</text>
+      <rect class="bx hm" x="300" y="280" width="160" height="64"/><text class="t1" x="380" y="308" text-anchor="middle">6 · Approve</text><text class="t2" x="380" y="326" text-anchor="middle">a person says yes</text>
+      <rect class="bx cd" x="60"  y="280" width="190" height="64"/><text class="t1" x="155" y="308" text-anchor="middle">Save once</text><text class="t2" x="155" y="326" text-anchor="middle">never saved twice</text>
+      <path class="ln" d="M880 62 Q 895 62 895 120 V312 H664"/>
+      <path class="ln" d="M510 312 H464"/><path class="ln" d="M300 312 H254"/>
+    </svg>
+    <div class="legend"><span><i style="background:var(--llm)"></i>AI model (Gemini)</span><span><i style="background:var(--code)"></i>Python code</span><span><i style="background:var(--human)"></i>Person</span><span><i style="background:var(--accent)"></i>company.py</span></div>
+  </div>
+  <div class="callout key"><strong>Same as Lab 7</strong>Plan → Fetch → Decide → Check → Approve. The project just adds an <b>Explain</b> step (the AI writes a friendly reply for the manager) and gets its data from a real database, real documents and a graph.</div>
+  <label class="done-row"><input type="checkbox" data-done="c2">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="c3" data-unit>
+  <div class="unit-head"><span class="unit-num">C3</span><h2>Inside company.py: the rule book</h2></div>
+  <div class="goal"><b>You will learn:</b> the 5 things this file defines. This is the only file that knows about motors and jars.</div>
+
+  <h4>1 · GRAPH: how the knowledge graph is made</h4>
+  <p>Each line is a database query. Every row it returns becomes one arrow in the graph.</p>
+  <div class="codebox"><div class="bar"><span>company.py (shortened)</span><button data-copy>Copy</button></div><pre><code class="py"># Each line: (name of the arrow, a query that returns pairs "a" and "b")
+# Every pair becomes an arrow:  a --LINK--> b
+GRAPH_LINKS = [
+    ("USES",          "...products joined with their parts..."),        # Mixer Grinder --USES--> Motor
+    ("SUPPLIED_BY",   "...parts joined with their suppliers..."),       # Motor --SUPPLIED_BY--> Apex Motors
+    ("COMPETES_WITH", "...competitor products joined with ours..."),    # Zenith Mixer Pro --COMPETES_WITH--> Mixer Grinder
+]</code></pre></div>
+
+  <h4>2 · QUESTIONS: the menu of database questions</h4>
+  <p>The AI picks a question <b>by name</b>. It only sees the "about" text, never the SQL. The SQL is written by us.</p>
+  <div class="codebox"><div class="bar"><span>company.py (2 of the 7 menu items)</span><button data-copy>Copy</button></div><pre><code class="py">QUESTIONS = {
+    "product": {
+        "about": "price, cost, stock and daily sales of a product (id = product id)",   # the AI sees this
+        "sql": "SELECT id, name, price, unit_cost, stock, daily_sales FROM products WHERE id = :id",  # only code sees this
+    },
+    "component": {
+        "about": "stock and daily use of a component (id = component id)",
+        "sql": "SELECT id, name, stock, daily_use FROM components WHERE id = :id",
+    },
+    # ... 5 more: rival_price, supplier, parts_from_supplier, other_suppliers, offers_for_component
+}</code></pre></div>
+
+  <h4>3 · ACTIONS: the only changes allowed</h4>
+  <p>There are just <b>two</b> things the system can ever change: a <b>price</b> or a <b>purchase order</b>.</p>
+  <div class="codebox"><div class="bar"><span>company.py (one of the 2 actions)</span><button data-copy>Copy</button></div><pre><code class="py">ACTIONS = {
+    "update_price": {
+        "about": "change the selling price of a product",
+        "values": {"product_id": (str, "product id"),           # what the AI must fill in,
+                   "new_price":  (int, "new price in Rs")},      # and the type each one must be
+        "measure": measure_price_change,                         # the function that does the maths
+        "rules": ["min_margin", "big_price_cut"],                # which rules to check
+        "sql": "UPDATE products SET price = :new_price WHERE id = :product_id",   # the change itself
+    },
+    "create_purchase_order": { ... },                            # same idea, for orders
+}</code></pre></div>
+  <p>The <b>measure</b> function does the maths from the database. For a price change:</p>
+  <div class="codebox"><div class="bar"><span>company.py · measure_price_change</span><button data-copy>Copy</button></div><pre><code class="py">def measure_price_change(sql, v):
+    rows = sql("SELECT price, unit_cost FROM products WHERE id = :id", id=v["product_id"])
+    old, cost, new = rows[0]["price"], rows[0]["unit_cost"], v["new_price"]
+    return {"margin":    round((new - cost) / new, 3),    # profit share of the new price
+            "price_cut": round((old - new) / old, 3)}     # how much cheaper than before
+    # (the real file returns a few more numbers too)</code></pre></div>
+
+  <h4>4 · RULES: checked by code, the AI cannot skip them</h4>
+  <div class="codebox"><div class="bar"><span>company.py · RULES</span><button data-copy>Copy</button></div><pre><code class="py"># FAIL     = never allowed, nobody can approve it
+# APPROVAL = allowed only if a manager says yes
+RULES = {
+    "min_margin":      {"broken_if": lambda m: m["margin"] &lt; 0.20,            "result": "FAIL",     "why": "margin below 20%"},
+    "big_price_cut":   {"broken_if": lambda m: m["price_cut"] &gt; 0.10,         "result": "APPROVAL", "why": "price cut above 10% needs a manager"},
+    "min_cover":       {"broken_if": lambda m: m["days_of_stock_after"] &lt; 15, "result": "FAIL",     "why": "less than 15 days of stock after the order"},
+    "arrives_in_time": {"broken_if": lambda m: m["late_by_days"] &gt; 0,         "result": "FAIL",     "why": "delivery arrives after our stock runs out"},
+    "alternate_cost":  {"broken_if": lambda m: m["extra_cost"] &gt; 0.08,        "result": "APPROVAL", "why": "more than 8% dearer than the usual supplier"},
+    "large_order":     {"broken_if": lambda m: m["order_value"] &gt; 250000,     "result": "APPROVAL", "why": "orders above Rs 2,50,000 need a manager"},
+}</code></pre></div>
+  <p><code>lambda m: m["margin"] &lt; 0.20</code> is a tiny one-line function. It means: "given the measured numbers <code>m</code>, is the margin below 20%?" If yes, the rule is broken.</p>
+
+  <h4>5 · GUIDANCE: soft tips for the AI</h4>
+  <div class="codebox"><div class="bar"><span>company.py · GUIDANCE</span><button data-copy>Copy</button></div><pre><code class="py"># Soft advice. The AI reads it, but code does not check it.
+GUIDANCE = [
+    "When we order, we order enough stock for about 30 days of use, rounded up to the nearest 10.",
+    "Prefer the cheapest choice that passes every rule.",
+]</code></pre></div>
+  <div class="callout key"><strong>Rules vs guidance</strong><b>Rules</b> are like the law: code checks them, always. <b>Guidance</b> is like advice from a senior: the AI should follow it, but nobody checks.</div>
+  <label class="done-row"><input type="checkbox" data-done="c3">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="c4" data-unit>
+  <div class="unit-head"><span class="unit-num">C4</span><h2>Inside connect.py: the connections</h2></div>
+  <div class="goal"><b>You will learn:</b> how the system connects to the database, reads documents, searches them, and builds the graph.</div>
+
+  <h4>Database: one URL, one helper</h4>
+  <div class="codebox"><div class="bar"><span>connect.py (shortened)</span><button data-copy>Copy</button></div><pre><code class="py">def connect_database(url):
+    db = create_engine(url)          # PostgreSQL, or a local file "sqlite:///company.db"
+    # make a small table that remembers every saved decision (so nothing is saved twice)
+    ...CREATE TABLE IF NOT EXISTS done_actions...
+    return db
+
+def run_sql(db, sql, **values):
+    """Run one query and return the rows as a list of dictionaries."""
+    with db.connect() as c:
+        return [dict(r) for r in c.execute(text(sql), values).mappings()]</code></pre></div>
+
+  <h4>Documents: read PDF, Word and text files</h4>
+  <div class="codebox"><div class="bar"><span>connect.py · read_file (shortened)</span><button data-copy>Copy</button></div><pre><code class="py">def read_file(path):
+    if path.suffix == ".pdf":    ...read with pypdf...          # PDF files
+    if path.suffix == ".docx":   ...read with python-docx...    # Word files
+    return path.read_text()                                     # .txt and .md files</code></pre></div>
+
+  <h4>Search (RAG): same as Lab 5</h4>
+  <div class="codebox"><div class="bar"><span>connect.py · build_vectors and search</span><button data-copy>Copy</button></div><pre><code class="py">def build_vectors(docs):
+    # 1. cut every document into pieces of about 300 letters
+    pieces = [{"doc": d["name"], "text": p} for d in docs for p in cut_into_pieces(d["text"])]
+    # 2. turn every piece into numbers with TF-IDF
+    model = TfidfVectorizer(stop_words="english")
+    vectors = model.fit_transform([p["text"] for p in pieces])
+    return {"pieces": pieces, "model": model, "vectors": vectors}
+
+def search(index, question, top=2, min_score=0.08):
+    q = index["model"].transform([question])                  # question -> numbers
+    scores = cosine_similarity(q, index["vectors"])[0]        # compare with every piece
+    best = scores.argsort()[::-1][:top]                       # the 2 best matches
+    return [... for i in best if scores[i] &gt;= min_score]      # skip weak matches</code></pre></div>
+
+  <h4>Knowledge graph: same as Lab 6</h4>
+  <div class="codebox"><div class="bar"><span>connect.py · build_graph</span><button data-copy>Copy</button></div><pre><code class="py">def build_graph(db):
+    graph = nx.DiGraph()
+    for link, sql in company.GRAPH_LINKS:           # e.g. ("USES", "SELECT ... AS a, ... AS b")
+        for row in run_sql(db, sql):
+            graph.add_edge(row["a"], row["b"], link=link)   # one row = one arrow
+    return graph</code></pre></div>
+  <label class="done-row"><input type="checkbox" data-done="c4">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="c5" data-unit>
+  <div class="unit-head"><span class="unit-num">C5</span><h2>Inside agents.py: the workers</h2></div>
+  <div class="goal"><b>You will learn:</b> the decision agent, step by step. It is the same as Lab 7, just bigger.</div>
+
+  <h4>One door to the AI: ask_ai</h4>
+  <p>Every time the project talks to the AI, it goes through this one small function. Like Lab 2, it asks for JSON and returns a dictionary.</p>
+  <div class="codebox"><div class="bar"><span>agents.py · ask_ai</span><button data-copy>Copy</button></div><pre><code class="py">def ask_ai(prompt):
+    from google import genai
+    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    # always answer in JSON; temperature 0 = same answer every time
+    settings = {"response_mime_type": "application/json", "temperature": 0}
+    reply = client.models.generate_content(model="gemini-2.5-flash", contents=prompt, config=settings)
+    return json.loads(reply.text)       # JSON text -> Python dictionary</code></pre></div>
+
+  <h4>The whole decision agent in a few lines</h4>
+  <div class="codebox"><div class="bar"><span>agents.py · decision_agent (shortened)</span><button data-copy>Copy</button></div><pre><code class="py">def decision_agent(system, question):
+    needs   = plan(system, question)                                    # 1. AI: what do I need?
+    context = fetch(system, needs)                                      # 2. code: get it
+    decision = decide(question, context)                                # 3. AI: what should we do?
+    status, reasons, values, measures = check_action(system, decision)  # 4. code: maths + rules
+    message = explain(question, context, decision, status, reasons, measures)   # 5. AI: simple reply
+    # ... the result is saved with an id like "DEC-a3f9c1" so a person can approve it later (step 6)</code></pre></div>
+
+  <div class="grid g2">
+    <div class="card"><span class="tag t-llm">1 · plan()</span><h4>AI picks from menus</h4><p>Shows the AI: the names of things (Jar = C-JAR), the question menu, graph names, document names. The AI replies: which database questions, which graph names, and which search words it needs.</p></div>
+    <div class="card"><span class="tag t-code">2 · fetch()</span><h4>Code gets the data</h4><p>Runs only menu questions (anything else is skipped), searches the documents, and reads the graph arrows.</p></div>
+    <div class="card"><span class="tag t-llm">3 · decide()</span><h4>AI answers + suggests</h4><p>Gets the facts, the allowed actions, the rules and the guidance. Replies with an answer and <b>at most one</b> action.</p></div>
+    <div class="card"><span class="tag t-code">4 · check_action()</span><h4>Code checks</h4><p>Checks the values, calls the <b>measure</b> function from company.py, and applies the rules.</p></div>
+    <div class="card"><span class="tag t-llm">5 · explain()</span><h4>AI writes for people</h4><p>Turns everything into a short, friendly message for the manager. No codes, no JSON.</p></div>
+    <div class="card"><span class="tag t-human">6 · approve_and_write()</span><h4>Person approves</h4><p>Checks the result and the person's role, then saves the change <b>only once</b>.</p></div>
+  </div>
+
+  <h4>Step 2 in code: only menu items run</h4>
+  <div class="codebox"><div class="bar"><span>agents.py · fetch (database part)</span><button data-copy>Copy</button></div><pre><code class="py">for need in needs.get("database", []):
+    query = company.QUESTIONS.get(need.get("query"))    # look it up in the menu
+    if query is None:
+        continue                                        # not on the menu -> skip it
+    rows = run_sql(system["db"], query["sql"], id=need.get("id"))
+    facts.append({"query": need.get("query"), "id": need.get("id"), "rows": rows})</code></pre></div>
+
+  <h4>Step 4 in code: the worst result wins</h4>
+  <div class="codebox"><div class="bar"><span>agents.py · check_rules (simplified)</span><button data-copy>Copy</button></div><pre><code class="py">def check_rules(measures, rule_names):
+    # find every rule that is broken
+    broken = [company.RULES[r] for r in rule_names if company.RULES[r]["broken_if"](measures)]
+
+    if any(rule["result"] == "FAIL" for rule in broken):
+        return "FAIL", ...             # one FAIL rule is enough to block it
+    if broken:
+        return "NEEDS MANAGER", ...    # only APPROVAL rules broken
+    return "PASS", []                  # nothing broken</code></pre></div>
+  <div class="table-wrap"><table>
+    <tr><th>Result</th><th>Meaning</th></tr>
+    <tr><td><b>PASS</b></td><td>Follows every rule. Anyone may approve.</td></tr>
+    <tr><td><b>NEEDS MANAGER</b></td><td>Allowed, but only a manager may approve.</td></tr>
+    <tr><td><b>FAIL</b></td><td>Breaks a hard rule. Nobody can approve it.</td></tr>
+    <tr><td><b>CANNOT CHECK</b></td><td>The AI's values were wrong or missing, so we cannot check them.</td></tr>
+    <tr><td><b>NO ACTION</b></td><td>It was just a question; nothing to change.</td></tr>
+  </table></div>
+
+  <h4>Step 6 in code: save only once</h4>
+  <div class="codebox"><div class="bar"><span>agents.py · approve_and_write (simplified)</span><button data-copy>Copy</button></div><pre><code class="py">def approve_and_write(system, decision_id, role):
+    d = system["decisions"].get(decision_id)
+    if d["status"] == "FAIL":                                  return "Sorry, this breaks a company rule."
+    if d["status"] == "NEEDS MANAGER" and role != "manager":  return "This needs a manager's approval."
+
+    with system["db"].begin() as c:     # all or nothing
+        # write the decision id in the "diary". If it is already there, nothing is added.
+        result = c.execute(..."INSERT INTO done_actions ... ON CONFLICT (key) DO NOTHING"...)
+        if not result.rowcount:
+            return "This was already saved earlier, so nothing was saved again."
+        c.execute(...the action's SQL from company.py...)    # the ONLY place anything is changed
+    return "Done! ... has been saved."</code></pre></div>
+  <label class="done-row"><input type="checkbox" data-done="c5">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="c6" data-unit>
+  <div class="unit-head"><span class="unit-num">C6</span><h2>Inside main.py: the control room</h2></div>
+  <div class="goal"><b>You will learn:</b> how everything starts, and how questions are asked.</div>
+  <p>When you run <code>python main.py</code>, it does <b>4 start-up steps</b>, then waits for questions.</p>
+  <div class="codebox"><div class="bar"><span>main.py · start (shortened)</span><button data-copy>Copy</button></div><pre><code class="py">def start():
+    db    = connect.connect_database(DATABASE_URL)     # Step 1: connect to the database
+    docs  = connect.load_documents(DOCUMENTS_FOLDER)   # Step 2: read all documents
+    index = connect.build_vectors(docs)                # Step 3: get document search ready (RAG)
+    graph = connect.build_graph(db)                    # Step 4: build the knowledge graph
+
+    # everything goes into one dictionary called "system"
+    return {"db": db, "docs": docs, "index": index, "graph": graph, "decisions": {}}</code></pre></div>
+  <div class="codebox"><div class="bar"><span>main.py · ask (shortened)</span><button data-copy>Copy</button></div><pre><code class="py">def ask(system, question, approve_as=None):
+    result = agents.decision_agent(system, question)     # run all the steps
+    print("Assistant:", result["answer"])                # show the friendly reply
+    if result["kind"] == "decision" and approve_as:      # if there is something to approve...
+        print(agents.approve_and_write(system, result["id"], approve_as))</code></pre></div>
+  <div class="table-wrap"><table>
+    <tr><th>Command</th><th>What it does</th></tr>
+    <tr><td><code>python main.py demo</code></td><td>Runs a set of example questions by itself (see C9)</td></tr>
+    <tr><td><code>python main.py</code></td><td>You type your own questions. Type <code>learn &lt;file&gt;</code> to teach it a new document, <code>quit</code> to stop.</td></tr>
+  </table></div>
+  <label class="done-row"><input type="checkbox" data-done="c6">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="c7" data-unit>
+  <div class="unit-head"><span class="unit-num">C7</span><h2>One question, start to end</h2></div>
+  <div class="goal"><b>You will learn:</b> what happens inside, at each step, for one real question.</div>
+  <p>Question: <b>"Apex Motors has told us the motor delivery will be 14 days late. What should we do?"</b></p>
+
+  <h4>Step 1 · Plan (AI)</h4>
+  <p>The AI cannot see any data yet. It picks from the menus:</p>
+  <div class="codebox"><div class="bar"><span>what the AI asks for</span><button data-copy>Copy</button></div><pre><code>{"database": [{"query": "supplier",            "id": "S-APEX"},
+              {"query": "parts_from_supplier", "id": "S-APEX"},
+              {"query": "other_suppliers",     "id": "S-APEX"}],
+ "graph":     ["Apex Motors", "Motor"],
+ "documents": ["Apex Motors delay", "alternate supplier"]}</code></pre></div>
+
+  <h4>Step 2 · Fetch (code)</h4>
+  <ul class="tight">
+    <li><b>Database:</b> Apex is 14 days late. Motor stock 300, we use 30 a day. Bharat also sells motors: Rs 330, 7 days.</li>
+    <li><b>Documents:</b> the delay notice, and the purchasing policy rule about other suppliers.</li>
+    <li><b>Graph:</b> Mixer Grinder and Hand Blender both use the Motor.</li>
+  </ul>
+
+  <h4>Step 3 · Decide (AI)</h4>
+  <div class="codebox"><div class="bar"><span>what the AI suggests</span><button data-copy>Copy</button></div><pre><code>{"answer": "Apex will be too late. Order motors from Bharat Electricals.",
+ "action": "create_purchase_order",
+ "values": {"component_id": "C-MOTOR", "supplier_id": "S-BHARAT", "quantity": 900}}</code></pre></div>
+
+  <h4>Step 4 · Check (code)</h4>
+  <div class="table-wrap"><table>
+    <tr><th>Measured by code</th><th>Value</th><th>Rule</th><th>Result</th></tr>
+    <tr><td>Stock lasts now</td><td>300 ÷ 30 = 10 days</td><td></td><td></td></tr>
+    <tr><td>Bharat delivers in</td><td>7 days</td><td>Must arrive before stock runs out</td><td>✓ OK</td></tr>
+    <tr><td>Stock after the order</td><td>(300 + 900) ÷ 30 = 40 days</td><td>At least 15 days</td><td>✓ OK</td></tr>
+    <tr><td>Extra cost vs Apex</td><td>(330 − 310) ÷ 310 = 6.5%</td><td>Up to 8% is fine</td><td>✓ OK</td></tr>
+    <tr><td>Order value</td><td>900 × 330 = Rs 2,97,000</td><td>Above Rs 2,50,000 needs a manager</td><td>⚠ manager</td></tr>
+  </table></div>
+  <p>Result: <b>NEEDS MANAGER</b>.</p>
+
+  <h4>Step 5 · Explain (AI)</h4>
+  <div class="callout">"Apex's motors would arrive in 21 days, but our motor stock lasts only about 10 days. I suggest ordering 900 motors from Bharat Electricals. They deliver in 7 days and cost a little more. Because the order is about Rs 2,97,000, a manager needs to approve it."</div>
+
+  <h4>Step 6 · Approve (person)</h4>
+  <div class="codebox"><div class="bar"><span>output</span><button data-copy>Copy</button></div><pre><code>[manager clicks Approve]        Done! A purchase order for 900 x Motor from Bharat Electricals has been saved.
+[manager clicks Approve again]  This was already saved earlier, so nothing was saved again.</code></pre></div>
+  <label class="done-row"><input type="checkbox" data-done="c7">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="c8" data-unit>
+  <div class="unit-head"><span class="unit-num">C8</span><h2>Rules playground</h2></div>
+  <div class="goal"><b>Try it:</b> you are the AI. Suggest an order or a new price, and see what the code's rule check says. These are the project's real numbers.</div>
+  <div class="play">
+    <div class="tabs"><button class="on" data-mode="po">Purchase order</button><button data-mode="price">Price change</button></div>
+    <div id="poForm" class="form">
+      <label>Part<select id="poComp"></select></label>
+      <label>Supplier<select id="poSup"></select></label>
+      <label>Quantity<input id="poQty" type="number" min="1" value="900"></label>
+    </div>
+    <div id="priceForm" class="form" style="display:none">
+      <label>Product<select id="prProd"></select></label>
+      <label>New price (Rs)<input id="prNew" type="number" min="1" value="900"></label>
+    </div>
+    <div class="measures" id="measures"></div>
+    <div class="rules-list" id="rulesList"></div>
+    <div class="verdict" id="verdict"></div>
+  </div>
+  <div class="callout try"><strong>Guess first, then check</strong>
+    <ul class="tight" style="margin:6px 0 0">
+      <li>Motor · Apex Motors · 900 → ?</li>
+      <li>Motor · Bharat Electricals · 900 → ?</li>
+      <li>Jar · ClearJar Plastics · 600 → ? Then try 5000 → ?</li>
+      <li>Jar · Bharat Electricals · 600 → ?</li>
+      <li>Mixer Grinder at Rs 900 → ? What is the lowest price that passes?</li>
+    </ul>
+  </div>
+  <label class="done-row"><input type="checkbox" data-done="c8">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="c9" data-unit>
+  <div class="unit-head"><span class="unit-num">C9</span><h2>The demo questions</h2></div>
+  <div class="goal"><b>You will learn:</b> what each demo question shows. Run <code>python main.py demo</code> and follow along.</div>
+
+  <details open><summary>1 · "Apex Motors will be 14 days late. What should we do?"</summary>
+    <p>Shown in detail in C7. Order motors from Bharat → <b>NEEDS MANAGER</b> (big order). Manager approves → saved. Approve again → nothing happens.</p>
+    <p><b>Shows:</b> all six steps, approval by role, saving only once.</p>
+  </details>
+  <details><summary>2 · "Zenith cut its mixer to Rs 900. What price should our Mixer Grinder have?"</summary>
+    <ul class="tight">
+      <li>If we also go to Rs 900: profit = (900 − 750) ÷ 900 = 16.7%. That is below 20% → <b>FAIL</b>.</li>
+      <li>Lowest allowed price: 750 ÷ 0.8 = 937.5 → about <b>Rs 940</b>. That is a 6% cut, so no manager needed.</li>
+    </ul>
+    <p><b>Shows:</b> the AI cannot break the profit rule, even if the competitor is cheaper.</p>
+  </details>
+  <details><summary>3 · "Should we reorder Jars?" (approved by an analyst)</summary>
+    <ul class="tight">
+      <li>240 jars, 20 a day → 12 days left. ClearJar delivers in 5 days at Rs 60.</li>
+      <li>About 600 jars → 42 days of stock, Rs 36,000 → <b>PASS</b>. An analyst can approve.</li>
+    </ul>
+  </details>
+  <details><summary>4 · "We want to order 5000 jars. Is that ok?"</summary>
+    <ul class="tight">
+      <li>5000 × Rs 60 = Rs 3,00,000 → above Rs 2,50,000 → <b>NEEDS MANAGER</b>.</li>
+      <li>The analyst's approval is refused. The manager's approval works.</li>
+    </ul>
+  </details>
+  <details><summary>5, 6, 7 · Information questions</summary>
+    <ul class="tight">
+      <li>"What do we know about the Motor?" → uses the graph and documents. <b>NO ACTION</b>.</li>
+      <li>"What does the purchasing policy say about alternate suppliers?" → finds the rule in the Word file (RAG).</li>
+      <li>"What is the weather today?" → not about our business. It politely says it has no information.</li>
+    </ul>
+  </details>
+  <label class="done-row"><input type="checkbox" data-done="c9">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="c10" data-unit>
+  <div class="unit-head"><span class="unit-num">C10</span><h2>The learning agent</h2></div>
+  <div class="goal"><b>You will learn:</b> how a second agent reads a new document and adds new facts, with a person's OK.</div>
+  <p>A new Word file arrives: <code>new_documents/supplier_onboarding.docx</code>. It says:</p>
+  <ul class="tight">
+    <li>Delta Windings is a new supplier for the Motor.</li>
+    <li>Delta Windings depends on Kolar Metals.</li>
+    <li>Kolar Metals supplies Copper.</li>
+    <li>The Motor needs Copper.</li>
+  </ul>
+  <div class="codebox"><div class="bar"><span>how it works</span><button data-copy>Copy</button></div><pre><code>1. learning_agent(file)   The AI reads the document and suggests new arrows:
+                            Motor --SUPPLIED_BY--> Delta Windings
+                            Delta Windings --DEPENDS_ON--> Kolar Metals
+                            Kolar Metals --SUPPLIES--> Copper
+                            Motor --REQUIRES--> Copper
+2. A person checks them   "Should I remember these? yes / no"
+3. apply_learning()       Adds the arrows to the graph and the document to the search</code></pre></div>
+  <p>Now ask <b>"What do we know about Copper?"</b> and it can answer: the Motor needs copper, which comes from Kolar Metals through Delta Windings. So a copper shortage would affect both products. None of this was in the database before.</p>
+  <div class="callout try"><strong>Think about it</strong>Why does the learning agent only <em>suggest</em>, and a person decides? What could go wrong if any document could change the graph by itself?</div>
+  <label class="done-row"><input type="checkbox" data-done="c10">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="c11" data-unit>
+  <div class="unit-head"><span class="unit-num">C11</span><h2>Run it yourself</h2></div>
+  <div class="goal"><b>You will:</b> run the full project in Google Colab.</div>
+
+  <h3>Option A · With Gemini (as the project is)</h3>
+  <ol class="steps">
+    <li>Get a free Gemini API key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>.</li>
+    <li>In Colab, click the <b>🔑 key icon</b> on the left (Secrets). Add a secret named <code>GEMINI_API_KEY</code> with your key, and switch on notebook access.</li>
+    <li>Zip the <code>simple_kdi</code> folder and run the cells below.</li>
+  </ol>
+  <div class="codebox"><div class="bar"><span>Cell 1 · upload and install</span><button data-copy>Copy</button></div><pre><code class="py">from google.colab import files
+files.upload()                        # choose simple_kdi.zip from your computer
+!unzip -q -o simple_kdi.zip           # unzip it
+%cd simple_kdi
+!pip -q install -r requirements.txt   # install what the project needs</code></pre></div>
+  <div class="codebox"><div class="bar"><span>Cell 2 · add the key and run the demo</span><button data-copy>Copy</button></div><pre><code class="py">import os
+from google.colab import userdata
+os.environ["GEMINI_API_KEY"] = userdata.get("GEMINI_API_KEY")   # read the key from Secrets
+
+!python main.py demo                  # runs all the demo questions</code></pre></div>
+  <div class="codebox"><div class="bar"><span>Cell 3 · ask your own question and look inside</span><button data-copy>Copy</button></div><pre><code class="py">import main
+
+system = main.start()                                   # the 4 start-up steps
+result = main.ask(system, "Should we reorder Blade Sets?")
+
+print(result["details"]["plan"])       # what the AI asked for (step 1)
+print(result["details"]["measures"])   # what the code measured (step 4)
+print(result["status"])                # PASS / NEEDS MANAGER / FAIL ...</code></pre></div>
+  <div class="callout warn"><strong>Start fresh</strong>Approved changes are saved in <code>company.db</code>. To go back to the original data, run <code>!rm company.db</code> and start again.</div>
+
+  <h3>Option B · With the free Hugging Face model (no API key)</h3>
+  <p>Remember: <b>every AI call goes through one function, <code>ask_ai</code></b>. So we can replace that one function with our Hugging Face model, and everything else stays the same.</p>
+  <div class="codebox"><div class="bar"><span>Cell 4 · swap Gemini for Qwen</span><button data-copy>Copy</button></div><pre><code class="py">import os, json, re
+from transformers import pipeline
+import agents, main
+
+os.environ["GEMINI_API_KEY"] = "not-used"   # main.py checks that a key exists
+
+# A slightly bigger free model, because the project's prompts are longer
+hf = pipeline("text-generation", model="Qwen/Qwen2.5-3B-Instruct",
+              device_map="auto", torch_dtype="auto")
+
+# Our own version of ask_ai: same input (a prompt), same output (a dictionary)
+def ask_ai_local(prompt):
+    messages = [{"role": "user", "content": prompt}]
+    for attempt in range(3):                                        # try up to 3 times
+        text = hf(messages, max_new_tokens=700, do_sample=False)[0]["generated_text"][-1]["content"]
+        found = re.search(r"\{.*\}", text, re.S)                    # find the JSON part
+        try:
+            return json.loads(found.group(0))
+        except Exception:
+            messages.append({"role": "assistant", "content": text})
+            messages.append({"role": "user", "content": "Reply with valid JSON only."})
+    return {}
+
+agents.ask_ai = ask_ai_local                 # the swap: one line!
+
+system = main.start()
+main.ask(system, "Should we reorder Jars?")</code></pre></div>
+  <div class="callout key"><strong>An important lesson</strong>A small model gives weaker plans and suggestions. But the system stays <b>safe</b>: bad values become <b>CANNOT CHECK</b>, and rule breaks become <b>FAIL</b>. A weaker brain makes the agent less helpful, not less safe, because the checking is done by code.</div>
+  <label class="done-row"><input type="checkbox" data-done="c11">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="c12" data-unit>
+  <div class="unit-head"><span class="unit-num">C12</span><h2>Your turn: small changes to try</h2></div>
+  <div class="goal"><b>You will:</b> change the project yourself. Most of these only need <code>company.py</code>.</div>
+  <div class="grid g2">
+    <div class="card"><span class="tag t-code">Easy</span><h4>Change a rule</h4><p>Make the minimum profit 25% instead of 20%. Ask the mixer price question again. What changes?</p></div>
+    <div class="card"><span class="tag t-code">Easy</span><h4>Change the guidance</h4><p>Change "about 30 days" to "about 45 days". Ask "Should we reorder Jars?" again. Does the quantity change?</p></div>
+    <div class="card"><span class="tag t-acc">Medium</span><h4>Add a menu question</h4><p>The database has a <code>price_history</code> table. Add it to <code>QUESTIONS</code> and ask "How has the Mixer price changed?"</p></div>
+    <div class="card"><span class="tag t-acc">Medium</span><h4>Add a rule</h4><p>Add a rule: more than 90 days of stock after an order needs a manager (too much money in stock).</p></div>
+    <div class="card"><span class="tag t-llm">Bigger</span><h4>Add a document</h4><p>Write a short <code>.md</code> file with a new policy, put it in <code>documents/</code>, restart, and ask about it.</p></div>
+    <div class="card"><span class="tag t-llm">Bigger</span><h4>A different business</h4><p>Change only <code>company.py</code> and <code>seed.sql</code> for a small pharmacy. Do the other 3 files still work without changes?</p></div>
+  </div>
+  <label class="done-row"><input type="checkbox" data-done="c12">Mark this unit as done</label>
+</section>
+
+<!-- ============================================================ WRAP-UP -->
+<div class="part-banner"><span class="eyebrow">Wrap-up</span><h2>Check what you learned</h2><p>A short quiz, then the important words in one place.</p></div>
+
+<section class="unit" id="d1" data-unit>
+  <div class="unit-head"><span class="unit-num">Quiz</span><h2>Eight quick questions</h2></div>
+  <div id="quiz"></div>
+  <p id="quizScore" style="font-weight:700"></p>
+  <label class="done-row"><input type="checkbox" data-done="d1">Mark this unit as done</label>
+</section>
+
+<section class="unit" id="d2" data-unit>
+  <div class="unit-head"><span class="unit-num">Words</span><h2>Words to remember</h2></div>
+  <div class="table-wrap"><table>
+    <tr><th>Word</th><th>Simple meaning</th></tr>
+    <tr><td><b>Agent</b></td><td>An AI that works in a loop: think → do → look → repeat, until the job is done.</td></tr>
+    <tr><td><b>Language model (LLM)</b></td><td>The AI "brain" that understands and writes text. Example: Gemini, Qwen.</td></tr>
+    <tr><td><b>Small language model</b></td><td>A smaller, cheaper AI brain that can run for free in Colab.</td></tr>
+    <tr><td><b>Tool</b></td><td>A Python function the AI can ask us to run.</td></tr>
+    <tr><td><b>JSON</b></td><td>A simple data format, like a Python dictionary. Lets code read the AI's answer.</td></tr>
+    <tr><td><b>Menu</b></td><td>A fixed list of things the AI may choose from.</td></tr>
+    <tr><td><b>ReAct</b></td><td>Think, do one step, look at the result, repeat.</td></tr>
+    <tr><td><b>Plan first, then do</b></td><td>Make the full list first, then do everything on it.</td></tr>
+    <tr><td><b>RAG</b></td><td>First find the right pieces of documents, then let the AI answer from them.</td></tr>
+    <tr><td><b>Vector</b></td><td>A list of numbers that stands for a piece of text, so the computer can compare texts.</td></tr>
+    <tr><td><b>Knowledge graph</b></td><td>Things connected by arrows, like a family tree.</td></tr>
+    <tr><td><b>Rule</b></td><td>A company rule checked by code. FAIL = never allowed. APPROVAL = needs a manager.</td></tr>
+    <tr><td><b>Guidance</b></td><td>Soft advice for the AI that code does not check.</td></tr>
+    <tr><td><b>Human in the loop</b></td><td>A person must say yes before something important happens.</td></tr>
+    <tr><td><b>Save only once</b></td><td>Clicking approve twice does not do the action twice.</td></tr>
+  </table></div>
+
+  <h3>The whole day on one card</h3>
+  <div class="grid g2">
+    <div class="card"><h4>How to build an agent</h4><p>
+      1. Write down the goal.<br>
+      2. Make a menu of what it may look up.<br>
+      3. Make a short list of actions it may suggest.<br>
+      4. Write the rules in code.<br>
+      5. Decide who approves what.<br>
+      6. Make sure nothing is saved twice.</p></div>
+    <div class="card"><h4>Who does what</h4><p>
+      <b style="color:var(--llm)">AI:</b> understand, choose, suggest, explain.<br><br>
+      <b style="color:var(--code)">Code:</b> fetch data, do maths, check rules, save.<br><br>
+      <b style="color:var(--human)">Person:</b> say yes to anything important.</p></div>
+  </div>
+  <div class="formula" style="font-size:16px">The <span>AI suggests</span> · the <span>code checks</span> · a <span>person approves</span></div>
+  <label class="done-row"><input type="checkbox" data-done="d2">Mark this unit as done</label>
+</section>
+
+<footer>Agentic AI Workshop · Ideas, mini labs and the simple_kdi project.</footer>
+</main>
+</div>
+
+<script>
+(function(){
+  var store = {
+    get:function(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},
+    set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+  };
+
+  var savedTheme = store.get("aw-theme");
+  if(savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+  document.getElementById("themeBtn").onclick = function(){
+    var cur = document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    var next = cur === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    store.set("aw-theme", next);
+  };
+
+  var side = document.getElementById("side");
+  document.getElementById("menuBtn").onclick = function(){ side.classList.toggle("open"); };
+  side.addEventListener("click", function(e){ if(e.target.closest("a")) side.classList.remove("open"); });
+
+  var done = store.get("aw-done2") || {};
+  var boxes = document.querySelectorAll("[data-done]");
+  function refreshProgress(){
+    var n = 0;
+    boxes.forEach(function(b){
+      var id = b.getAttribute("data-done");
+      b.checked = !!done[id]; if(done[id]) n++;
+      var link = document.querySelector('nav.side a[href="#'+id+'"]');
+      if(link) link.classList.toggle("done", !!done[id]);
+    });
+    document.getElementById("progBar").style.width = (100*n/boxes.length)+"%";
+    document.getElementById("progLabel").textContent = n+" of "+boxes.length+" units done";
+  }
+  boxes.forEach(function(b){ b.addEventListener("change", function(){ done[b.getAttribute("data-done")] = b.checked; store.set("aw-done2", done); refreshProgress(); }); });
+  refreshProgress();
+
+  var links = Array.prototype.slice.call(document.querySelectorAll("nav.side a"));
+  var targets = links.map(function(a){ return document.querySelector(a.getAttribute("href")); });
+  function onScroll(){
+    var y = window.scrollY + 120, idx = 0;
+    targets.forEach(function(t,i){ if(t && t.offsetTop <= y) idx = i; });
+    links.forEach(function(a,i){ a.classList.toggle("active", i===idx); });
+  }
+  window.addEventListener("scroll", onScroll, {passive:true}); onScroll();
+
+  /* tiny python highlighter */
+  var KW = /\b(def|return|if|elif|else|for|in|import|from|as|try|except|raise|with|not|and|or|None|True|False|lambda|is|continue|break|while)\b/g;
+  document.querySelectorAll("code.py").forEach(function(el){
+    var src = el.textContent, out = "";
+    function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+    function plain(s){
+      return esc(s).replace(KW, '<span class="tk-k">$1</span>')
+                   .replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="tk-n">$1</span>')
+                   .replace(/(^|[^\w.>])([a-z_][a-z0-9_]*)(?=\()/gi, function(m,p,f){ return /^(def|return|if|for|in|not|and|or)$/.test(f) ? m : p+'<span class="tk-f">'+f+'</span>'; });
+    }
+    var re = /("""[\s\S]*?"""|'''[\s\S]*?'''|f?"(?:\\.|[^"\\\n])*"|f?'(?:\\.|[^'\\\n])*'|#[^\n]*)/g, m, last = 0;
+    while((m = re.exec(src))){
+      out += plain(src.slice(last, m.index));
+      out += '<span class="'+(m[0][0]==="#"?"tk-c":"tk-s")+'">'+esc(m[0])+'</span>';
+      last = re.lastIndex;
+    }
+    out += plain(src.slice(last));
+    el.innerHTML = out;
+  });
+
+  document.querySelectorAll("[data-copy]").forEach(function(btn){
+    btn.onclick = function(){
+      var code = btn.closest(".codebox").querySelector("pre").innerText;
+      function ok(){ btn.textContent = "Copied"; setTimeout(function(){ btn.textContent = "Copy"; }, 1400); }
+      function fallback(){ var t=document.createElement("textarea"); t.value=code; document.body.appendChild(t); t.select(); try{document.execCommand("copy"); ok();}catch(e){} t.remove(); }
+      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(code).then(ok, fallback); } else fallback();
+    };
+  });
+
+  /* agent loop stepper */
+  var LOOP = [
+    {k:"Goal", who:"Person", c:"human", t:"A question arrives", p:"A manager types a question. The agent's job is to give a useful and safe answer.", x:'"Should we reorder Jars?"'},
+    {k:"Plan", who:"AI model", c:"llm", t:"Plan: what do I need?", p:"The AI cannot see any data yet. It picks what it needs from a menu.", x:'I need:\n - the jar stock\n - the suppliers who sell jars\n - the purchasing policy'},
+    {k:"Act", who:"Python code", c:"code", t:"Act: get the data", p:"Python code fetches only what was on the menu.", x:"Jar: 240 in stock, we use 20 a day\nClearJar Plastics: Rs 60, delivers in 5 days (usual supplier)\nBharat Electricals: Rs 66, delivers in 7 days\nPolicy: keep at least 15 days of stock"},
+    {k:"Observe", who:"Python code", c:"code", t:"Observe: put it together", p:"All the results are collected so the AI can read them.", x:"240 ÷ 20 = 12 days of jars left.\nClearJar is cheaper and faster."},
+    {k:"Decide", who:"AI model", c:"llm", t:"Decide: answer and suggest", p:"The AI answers using the facts, and suggests one action.", x:'"Yes. Order 600 jars from ClearJar Plastics."'},
+    {k:"Check", who:"Python code", c:"code", t:"Check: redo the maths, apply the rules", p:"Code does not trust the AI's maths. It calculates again and checks the company rules.", x:"Stock after order = (240 + 600) ÷ 20 = 42 days   ✓ at least 15\nArrives in 5 days, stock lasts 12 days         ✓ in time\nCost = 600 × 60 = Rs 36,000                    ✓ under Rs 2,50,000\nRESULT: PASS"},
+    {k:"Approve", who:"Person", c:"human", t:"Approve: a person says yes", p:"Nothing is saved until a person approves. And it is saved only once.", x:"[Approve]        → saved\n[Approve again]  → already saved, nothing done"}
+  ];
+  var cur = 0, btns = document.getElementById("loopBtns"), panel = document.getElementById("loopPanel");
+  LOOP.forEach(function(s,i){
+    var b = document.createElement("button");
+    b.innerHTML = (i+1)+". "+s.k+"<small>"+s.who+"</small>";
+    b.onclick = function(){ cur = i; renderLoop(); };
+    btns.appendChild(b);
+  });
+  function renderLoop(){
+    var s = LOOP[cur];
+    Array.prototype.forEach.call(btns.children, function(b,i){ b.classList.toggle("on", i===cur); });
+    panel.innerHTML = '<div class="who" style="color:var(--'+s.c+')">'+s.who+'</div><h4>'+s.t+'</h4><p>'+s.p+'</p><pre></pre>';
+    panel.querySelector("pre").textContent = s.x;
+    document.getElementById("loopPrev").disabled = cur===0;
+    document.getElementById("loopNext").textContent = cur===LOOP.length-1 ? "Start again ↺" : "Next step →";
+  }
+  document.getElementById("loopPrev").onclick = function(){ if(cur>0){cur--; renderLoop();} };
+  document.getElementById("loopNext").onclick = function(){ cur = (cur+1) % LOOP.length; renderLoop(); };
+  renderLoop();
+
+  /* rules playground (project sample data) */
+  var COMP = {"C-MOTOR":{name:"Motor",stock:300,use:30},"C-JAR":{name:"Jar",stock:240,use:20},"C-BLADE":{name:"Blade Set",stock:900,use:30},"C-SWITCH":{name:"Speed Switch",stock:400,use:20}};
+  var SUP = {"S-APEX":{name:"Apex Motors",delay:14},"S-BHARAT":{name:"Bharat Electricals",delay:0},"S-CLEAR":{name:"ClearJar Plastics",delay:0}};
+  var OFFERS = [["C-MOTOR","S-APEX",310,7,1],["C-MOTOR","S-BHARAT",330,7,0],["C-JAR","S-CLEAR",60,5,1],["C-JAR","S-BHARAT",66,7,0],["C-BLADE","S-BHARAT",45,6,1],["C-SWITCH","S-BHARAT",25,6,1]];
+  var PROD = {"P-MIX":{name:"Mixer Grinder",price:1000,cost:750},"P-BLD":{name:"Hand Blender",price:600,cost:420}};
+  var mode = "po";
+  var $ = function(id){ return document.getElementById(id); };
+  function opt(sel, val, label){ var o=document.createElement("option"); o.value=val; o.textContent=label; sel.appendChild(o); }
+  Object.keys(COMP).forEach(function(k){ opt($("poComp"), k, COMP[k].name); });
+  Object.keys(PROD).forEach(function(k){ opt($("prProd"), k, PROD[k].name); });
+  function fillSuppliers(){
+    var c = $("poComp").value, s = $("poSup"), prev = s.value; s.innerHTML = "";
+    OFFERS.filter(function(o){return o[0]===c;}).forEach(function(o){ opt(s, o[1], SUP[o[1]].name + (o[4]?" (usual)":"")); });
+    if([].some.call(s.options,function(o){return o.value===prev;})) s.value = prev;
+  }
+  var inr = function(n){ return "Rs " + Math.round(n).toLocaleString("en-IN"); };
+  var pct = function(x){ return (Math.round(x*1000)/10) + "%"; };
+  function render(){
+    var measures = [], rules = [];
+    if(mode === "po"){
+      var c = $("poComp").value, s = $("poSup").value, q = parseInt($("poQty").value,10);
+      var part = COMP[c], offer = OFFERS.filter(function(o){return o[0]===c && o[1]===s;})[0], usual = OFFERS.filter(function(o){return o[0]===c && o[4];})[0];
+      if(!offer || !(q>0)){ $("measures").innerHTML=""; $("rulesList").innerHTML=""; $("verdict").className="verdict MGR"; $("verdict").innerHTML="CANNOT CHECK<span>Please enter a quantity above zero.</span>"; return; }
+      var daysNow = part.stock/part.use, lead = offer[3] + SUP[s].delay, after = (part.stock+q)/part.use, late = lead - daysNow, extra = (offer[2]-usual[2])/usual[2], value = q*offer[2];
+      measures = [["Stock lasts now", daysNow.toFixed(1)+" days"],["Stock after order", after.toFixed(1)+" days"],["Arrives in", lead+" days"],["Arrives late by", (late>0?late.toFixed(1):"0")+" days"],["Dearer than usual", pct(extra)],["Order value", inr(value)]];
+      rules = [["At least 15 days of stock after the order", after<15, "FAIL"],["Arrives before our stock runs out", late>0, "FAIL"],["Not more than 8% dearer than the usual supplier", extra>0.08, "APPROVAL"],["Order value up to Rs 2,50,000", value>250000, "APPROVAL"]];
+    } else {
+      var p = PROD[$("prProd").value], np = parseInt($("prNew").value,10);
+      if(!(np>0)){ $("measures").innerHTML=""; $("rulesList").innerHTML=""; $("verdict").className="verdict MGR"; $("verdict").innerHTML="CANNOT CHECK<span>Please enter a price above zero.</span>"; return; }
+      var margin = (np-p.cost)/np, cut = (p.price-np)/p.price;
+      measures = [["Price now", inr(p.price)],["New price", inr(np)],["Our cost", inr(p.cost)],["Profit margin", pct(margin)],["Price cut", pct(Math.max(cut,0))],["Lowest allowed price", inr(Math.ceil(p.cost/0.8))]];
+      rules = [["Profit margin at least 20%", margin<0.20, "FAIL"],["Price cut not more than 10%", cut>0.10, "APPROVAL"]];
+    }
+    $("measures").innerHTML = measures.map(function(m){ return '<div class="measure"><small>'+m[0]+'</small><b>'+m[1]+'</b></div>'; }).join("");
+    $("rulesList").innerHTML = rules.map(function(r){
+      var cls = !r[1] ? "ok" : (r[2]==="FAIL" ? "bad" : "mgr"), txt = !r[1] ? "OK" : (r[2]==="FAIL" ? "BROKEN · FAIL" : "BROKEN · NEEDS MANAGER");
+      return '<div class="rule-row"><span>'+r[0]+'</span><span class="pill '+cls+'">'+txt+'</span></div>';
+    }).join("");
+    var fails = rules.filter(function(r){return r[1]&&r[2]==="FAIL";}), apps = rules.filter(function(r){return r[1]&&r[2]==="APPROVAL";});
+    var v = $("verdict");
+    if(fails.length){ v.className="verdict FAIL"; v.innerHTML="FAIL<span>Not allowed. It breaks a company rule, so nobody can approve it.</span>"; }
+    else if(apps.length){ v.className="verdict MGR"; v.innerHTML="NEEDS MANAGER<span>Allowed, but only a manager can approve it.</span>"; }
+    else { v.className="verdict PASS"; v.innerHTML="PASS<span>Follows every rule. It can be approved and saved (only once).</span>"; }
+  }
+  $("poComp").onchange = function(){ fillSuppliers(); render(); };
+  ["poSup","poQty","prProd","prNew"].forEach(function(id){ $(id).addEventListener("input", render); $(id).addEventListener("change", render); });
+  document.querySelectorAll(".tabs button").forEach(function(b){
+    b.onclick = function(){
+      mode = b.getAttribute("data-mode");
+      document.querySelectorAll(".tabs button").forEach(function(x){ x.classList.toggle("on", x===b); });
+      $("poForm").style.display = mode==="po" ? "" : "none";
+      $("priceForm").style.display = mode==="price" ? "" : "none";
+      render();
+    };
+  });
+  $("poComp").value = "C-MOTOR"; fillSuppliers(); $("poSup").value = "S-BHARAT"; render();
+
+  /* quiz */
+  var QUIZ = [
+    ["What makes a program an agent, not just a chatbot?", ["It uses a bigger AI model","It works in a loop: it decides the next step, uses tools, and repeats","It has a nice screen","It was trained on company data"], 1, "The loop is the key: think → do → look → repeat."],
+    ["In simple_kdi, who calculates the profit margin of a new price?", ["The AI model","The manager","Python code, using numbers from the database","The document search"], 2, "measure_price_change() in company.py does the maths from the database. The AI's maths is never trusted."],
+    ["The AI asks for a menu item called \"delete_everything\". What happens?", ["It runs","It is skipped, because it is not on the menu","The program crashes","A manager must approve it"], 1, "fetch() only runs items found in company.QUESTIONS. Anything else is skipped."],
+    ["An order follows all FAIL rules, but costs Rs 3,00,000. What is the result?", ["PASS","FAIL","NEEDS MANAGER","CANNOT CHECK"], 2, "Orders above Rs 2,50,000 need a manager. That is an APPROVAL rule."],
+    ["A manager clicks Approve twice. What happens the second time?", ["A second order is created","Nothing, because it was already saved","An error","The order is cancelled"], 1, "The decision id is written in done_actions. If it is already there, nothing is saved again."],
+    ["Which helps most with \"Which products are affected if Apex is late?\"", ["Document search (RAG)","The knowledge graph","The AI's memory","The pricing policy"], 1, "Follow the arrows: Apex Motors ← Motor ← Mixer Grinder and Hand Blender."],
+    ["To use simple_kdi for a different business, which file do you mainly change?", ["agents.py","connect.py","company.py","main.py"], 2, "company.py is the rule book. The other files are general and work for any business."],
+    ["We swap Gemini for a very small free model. What happens?", ["Bad orders get saved","Answers get weaker, but the rules still stop bad actions","Nothing changes","The database breaks"], 1, "The checking is done by code, so a weaker AI is less helpful but still safe."]
+  ];
+  var quizEl = document.getElementById("quiz"), score = 0, answered = 0;
+  QUIZ.forEach(function(q, qi){
+    var box = document.createElement("div"); box.className = "q";
+    box.innerHTML = '<p class="qt">'+(qi+1)+'. '+q[0]+'</p><div class="opts"></div><div class="why"></div>';
+    var opts = box.querySelector(".opts");
+    q[1].forEach(function(o, oi){
+      var b = document.createElement("button"); b.textContent = o;
+      b.onclick = function(){
+        if(box.classList.contains("answered")) return;
+        box.classList.add("answered"); answered++;
+        if(oi===q[2]){ score++; b.classList.add("right"); } else { b.classList.add("wrong"); opts.children[q[2]].classList.add("right"); }
+        box.querySelector(".why").textContent = (oi===q[2] ? "Correct! " : "Not quite. ") + q[3];
+        if(answered===QUIZ.length) document.getElementById("quizScore").textContent = "Your score: "+score+" / "+QUIZ.length;
+      };
+      opts.appendChild(b);
+    });
+    quizEl.appendChild(box);
+  });
+})();
+</script>
+</body>
+</html>

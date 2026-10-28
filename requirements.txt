@@ -1,0 +1,8 @@
+sqlalchemy
+psycopg2-binary
+networkx
+scikit-learn
+pypdf
+python-docx
+matplotlib
+huggingface_hub
